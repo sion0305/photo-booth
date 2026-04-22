@@ -18,362 +18,307 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body {
-    height: 100%;
-    overflow: hidden;
-    overscroll-behavior: none;
-  }
+  html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
   body {
-    background: var(--bg);
-    color: var(--ink);
+    background: var(--bg); color: var(--ink);
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 16px;
-    -webkit-font-smoothing: antialiased;
-    user-select: none;
-    -webkit-user-select: none;
+    font-size: 16px; -webkit-font-smoothing: antialiased;
+    user-select: none; -webkit-user-select: none;
   }
-
-  /* grain overlay */
   body::after {
-    content: "";
-    position: fixed; inset: 0;
-    pointer-events: none;
+    content: ""; position: fixed; inset: 0; pointer-events: none;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.5'/></svg>");
-    opacity: 0.06;
-    z-index: 9999;
-    mix-blend-mode: multiply;
+    opacity: 0.06; z-index: 9999; mix-blend-mode: multiply;
   }
 
   .app {
-    position: relative;
-    width: 100%;
-    height: 100dvh;
-    max-width: 540px;
-    margin: 0 auto;
-    background: var(--bg);
-    overflow: hidden;
+    position: relative; width: 100%; height: 100dvh;
+    max-width: 540px; margin: 0 auto;
+    background: var(--bg); overflow: hidden;
   }
-
-  .screen {
-    position: absolute; inset: 0;
-    display: none;
-    flex-direction: column;
-  }
+  .screen { position: absolute; inset: 0; display: none; flex-direction: column; }
   .screen.active { display: flex; }
 
-  /* ========= INTRO ========= */
-  .intro {
-    padding: 28px 24px 32px;
-    justify-content: space-between;
-  }
-  .intro__top { display: flex; justify-content: space-between; align-items: center; }
   .mono { font-family: 'Fraunces', serif; font-style: italic; letter-spacing: .02em; }
   .badge {
     display: inline-flex; align-items: center; gap: 6px;
     font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
-    padding: 6px 10px;
-    border: 1.5px solid var(--line);
-    border-radius: 999px;
+    padding: 6px 10px; border: 1.5px solid var(--line); border-radius: 999px;
   }
   .badge .dot { width: 6px; height: 6px; background: var(--pop); border-radius: 50%; }
+
+  .btn {
+    width: 100%; padding: 20px;
+    background: var(--ink); color: var(--bg);
+    border: none; border-radius: 18px;
+    font-size: 16px; font-weight: 700; letter-spacing: -.01em;
+    cursor: pointer; transition: transform .15s ease, opacity .2s;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled { opacity: .35; cursor: not-allowed; }
+  .btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+  .btn-primary { background: var(--pop); color: var(--ink); border: 1.5px solid var(--line); }
+
+  .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 22px 0; }
+  .back {
+    background: none; border: none; font-size: 22px; cursor: pointer;
+    width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+  }
+  .back:active { background: rgba(0,0,0,.06); }
+
+  /* INTRO */
+  .intro { padding: 28px 24px 32px; justify-content: space-between; }
+  .intro__top { display: flex; justify-content: space-between; align-items: center; }
   .intro__title {
-    font-family: 'Fraunces', serif;
-    font-weight: 800;
-    font-size: clamp(56px, 16vw, 96px);
-    line-height: 0.92;
-    letter-spacing: -0.03em;
-    margin-top: 8vh;
+    font-family: 'Fraunces', serif; font-weight: 800;
+    font-size: clamp(56px, 16vw, 96px); line-height: 0.92;
+    letter-spacing: -0.03em; margin-top: 8vh;
   }
   .intro__title em { font-style: italic; font-weight: 300; color: var(--pop); }
-  .intro__lead {
-    margin-top: 24px;
-    max-width: 28ch;
-    color: var(--muted);
-    line-height: 1.55;
-    font-size: 15px;
-  }
-
+  .intro__lead { margin-top: 24px; max-width: 28ch; color: var(--muted); line-height: 1.55; font-size: 15px; }
   .steps { margin-top: 28px; display: grid; gap: 10px; }
   .step {
     display: grid; grid-template-columns: 28px 1fr auto; align-items: center;
-    gap: 14px;
-    padding: 14px 16px;
-    border: 1.5px solid var(--line);
-    background: var(--card);
-    border-radius: 14px;
+    gap: 14px; padding: 14px 16px;
+    border: 1.5px solid var(--line); background: var(--card); border-radius: 14px;
   }
-  .step__n {
-    font-family: 'Fraunces', serif;
-    font-weight: 600; font-style: italic;
-    font-size: 22px; line-height: 1;
-  }
+  .step__n { font-family: 'Fraunces', serif; font-weight: 600; font-style: italic; font-size: 22px; line-height: 1; }
   .step__t { font-weight: 500; font-size: 14px; }
   .step__m { font-size: 12px; color: var(--muted); font-family: 'Fraunces', serif; font-style: italic; }
-
   .cta {
-    margin-top: 28px;
-    width: 100%;
-    padding: 22px;
-    background: var(--ink);
-    color: var(--bg);
-    border: none;
-    border-radius: 20px;
-    font-size: 17px;
-    font-weight: 700;
-    letter-spacing: -.01em;
+    margin-top: 28px; width: 100%; padding: 22px;
+    background: var(--ink); color: var(--bg);
+    border: none; border-radius: 20px;
+    font-size: 17px; font-weight: 700; letter-spacing: -.01em;
     display: flex; align-items: center; justify-content: space-between;
-    cursor: pointer;
-    transition: transform .15s ease;
+    cursor: pointer; transition: transform .15s ease;
   }
   .cta:active { transform: scale(0.98); }
   .cta__arrow {
     width: 36px; height: 36px; border-radius: 50%;
     background: var(--pop); color: var(--ink);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+  }
+  .admin-link {
+    display: inline-block; margin-top: 12px;
+    font-size: 11px; color: var(--muted);
+    text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
   }
 
-  /* ========= CAMERA ========= */
+  /* LAYOUT */
+  .layout { padding: 0 0 20px; }
+  .layout__head { padding: 0 22px; margin-top: 6px; }
+  .section-title {
+    font-family: 'Fraunces', serif; font-weight: 800;
+    font-size: 38px; line-height: 1; letter-spacing: -.02em; margin-top: 20px;
+  }
+  .section-title em { font-style: italic; font-weight: 300; color: var(--pop); }
+  .section-sub { margin-top: 10px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+  .layout__list {
+    padding: 24px 22px; display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; flex: 1; overflow-y: auto;
+  }
+  .layout-card {
+    background: var(--card); border: 1.5px solid var(--line);
+    border-radius: 16px; padding: 18px 14px 14px; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    transition: transform .15s ease, background .2s;
+  }
+  .layout-card:active { transform: scale(0.97); }
+  .layout-card.selected { background: var(--ink); color: var(--bg); }
+  .layout-card.selected .lc-cell { background: var(--bg); }
+  .layout-card.selected .lc-name { color: var(--bg); }
+  .layout-card.selected .lc-meta { color: rgba(243,238,229,.6); }
+  .lc-preview {
+    display: grid; gap: 4px;
+    width: 80px; aspect-ratio: 3/4;
+    padding: 6px; border: 1px dashed currentColor; border-radius: 6px; opacity: .9;
+  }
+  .lc-cell { background: var(--ink); border-radius: 2px; aspect-ratio: 3/4; }
+  .lc-info { text-align: center; }
+  .lc-name { font-family: 'Fraunces', serif; font-weight: 600; font-size: 15px; line-height: 1.2; }
+  .lc-meta { font-size: 11px; color: var(--muted); margin-top: 2px; letter-spacing: .08em; text-transform: uppercase; }
+  .layout__footer { padding: 0 22px; }
+
+  /* GET READY */
+  .getready { background: var(--ink); color: var(--bg); align-items: center; justify-content: center; }
+  .getready__label {
+    font-size: 13px; letter-spacing: .22em; text-transform: uppercase;
+    color: rgba(243,238,229,.55); margin-bottom: 16px;
+  }
+  .getready__num {
+    font-family: 'Fraunces', serif; font-weight: 300; font-style: italic;
+    font-size: 260px; line-height: 1; color: var(--pop);
+  }
+  .getready__msg {
+    margin-top: 24px; font-size: 16px;
+    font-family: 'Fraunces', serif; font-style: italic;
+    color: rgba(243,238,229,.75); text-align: center;
+    padding: 0 30px; line-height: 1.4;
+  }
+
+  /* CAMERA */
   .camera { background: #000; }
   .cam-hud {
     position: absolute; top: 0; left: 0; right: 0;
-    padding: 18px 20px;
-    display: flex; justify-content: space-between; align-items: center;
-    z-index: 5;
-    color: #fff;
-    pointer-events: none;
+    padding: 18px 20px; display: flex; justify-content: space-between; align-items: center;
+    z-index: 5; color: #fff; pointer-events: none;
   }
   .cam-hud__counter {
-    font-family: 'Fraunces', serif;
-    font-size: 26px; font-weight: 600;
-    letter-spacing: -.02em;
-    padding: 6px 12px;
+    font-family: 'Fraunces', serif; font-size: 26px; font-weight: 600;
+    letter-spacing: -.02em; padding: 6px 12px;
     background: rgba(0,0,0,.35);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
     border-radius: 999px;
   }
   .cam-hud__counter em { font-style: italic; color: var(--pop); font-weight: 300; }
   .cam-close {
-    pointer-events: auto;
-    width: 40px; height: 40px; border-radius: 50%;
+    pointer-events: auto; width: 40px; height: 40px; border-radius: 50%;
     background: rgba(0,0,0,.35);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: none; color: #fff; font-size: 20px;
-    cursor: pointer;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border: none; color: #fff; font-size: 20px; cursor: pointer;
   }
-
-  .video-wrap {
-    position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    overflow: hidden;
-  }
-  #video {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    transform: scaleX(-1); /* mirror preview */
-  }
-
+  .video-wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  #video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
   .countdown {
-    position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Fraunces', serif;
-    font-weight: 300; font-style: italic;
-    font-size: 240px;
-    color: #fff;
-    text-shadow: 0 4px 40px rgba(0,0,0,.4);
-    pointer-events: none;
-    z-index: 4;
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-weight: 300; font-style: italic;
+    font-size: 240px; color: #fff; text-shadow: 0 4px 40px rgba(0,0,0,.4);
+    pointer-events: none; z-index: 4;
   }
-  .countdown.pop {
-    animation: pop 1s ease-out forwards;
-  }
+  .countdown.pop { animation: pop 1s ease-out forwards; }
   @keyframes pop {
     0% { transform: scale(1.35); opacity: 0; }
     15% { transform: scale(1); opacity: 1; }
     85% { transform: scale(1); opacity: 1; }
     100% { transform: scale(0.85); opacity: 0; }
   }
-
-  .flash {
-    position: absolute; inset: 0;
-    background: #fff;
-    opacity: 0;
-    pointer-events: none;
-    z-index: 6;
+  .nicemsg {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 600;
+    font-size: 72px; color: var(--pop); text-shadow: 0 2px 30px rgba(0,0,0,.5);
+    pointer-events: none; z-index: 4; opacity: 0;
   }
+  .nicemsg.show { animation: nice 2.8s ease-out forwards; }
+  @keyframes nice {
+    0% { transform: scale(0.8) translateY(10px); opacity: 0; }
+    15% { transform: scale(1.05) translateY(0); opacity: 1; }
+    70% { transform: scale(1) translateY(0); opacity: 1; }
+    100% { transform: scale(1) translateY(-10px); opacity: 0; }
+  }
+  .flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 6; }
   .flash.on { animation: flash .35s ease-out; }
-  @keyframes flash {
-    0% { opacity: 0; }
-    10% { opacity: 1; }
-    100% { opacity: 0; }
-  }
-
-  .thumbstrip {
-    position: absolute; bottom: 24px; left: 0; right: 0;
-    display: flex; gap: 6px; justify-content: center;
-    z-index: 5;
-    padding: 0 20px;
-  }
-  .tick {
-    flex: 1; max-width: 30px;
-    height: 4px;
-    background: rgba(255,255,255,.25);
-    border-radius: 2px;
-  }
+  @keyframes flash { 0%{opacity:0;} 10%{opacity:1;} 100%{opacity:0;} }
+  .thumbstrip { position: absolute; bottom: 24px; left: 0; right: 0; display: flex; gap: 6px; justify-content: center; z-index: 5; padding: 0 20px; }
+  .tick { flex: 1; max-width: 30px; height: 4px; background: rgba(255,255,255,.25); border-radius: 2px; }
   .tick.on { background: var(--pop); }
 
-  /* ========= SELECT ========= */
-  .select {
-    padding: 20px 18px 24px;
-  }
-  .select__head {
-    display: flex; justify-content: space-between; align-items: baseline;
-    margin-bottom: 16px;
-  }
-  .select__title {
-    font-family: 'Fraunces', serif;
-    font-weight: 700;
-    font-size: 32px;
-    letter-spacing: -.02em;
-    line-height: 1;
-  }
-  .select__title em { font-style: italic; font-weight: 300; color: var(--pop); }
-  .select__sub { font-size: 12px; color: var(--muted); font-family: 'Fraunces', serif; font-style: italic; }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    flex: 1;
-    overflow-y: auto;
-    padding-bottom: 100px;
-  }
+  /* SELECT */
+  .select { padding: 0 0 24px; }
+  .select__head { padding: 0 22px; display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px; }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; flex: 1; overflow-y: auto; padding: 20px 18px 120px; }
   .thumb {
-    position: relative;
-    aspect-ratio: 3/4;
-    border-radius: 10px;
-    overflow: hidden;
-    cursor: pointer;
-    background: #ddd;
-    border: 2px solid transparent;
+    position: relative; aspect-ratio: 3/4;
+    border-radius: 10px; overflow: hidden; cursor: pointer;
+    background: #ddd; border: 2px solid transparent;
     transition: transform .15s ease;
   }
   .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .thumb__badge {
     position: absolute; top: 8px; right: 8px;
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: rgba(0,0,0,.5);
-    backdrop-filter: blur(6px);
-    color: #fff;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Fraunces', serif;
-    font-weight: 600;
-    font-size: 14px;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(0,0,0,.5); backdrop-filter: blur(6px);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-weight: 600; font-size: 14px;
     border: 1.5px solid rgba(255,255,255,.3);
   }
-  .thumb.selected {
-    border-color: var(--pop);
-    transform: scale(0.97);
-  }
-  .thumb.selected .thumb__badge {
-    background: var(--pop);
-    color: var(--ink);
-    border-color: var(--ink);
-  }
+  .thumb.selected { border-color: var(--pop); transform: scale(0.97); }
+  .thumb.selected .thumb__badge { background: var(--pop); color: var(--ink); border-color: var(--ink); }
 
-  .select__footer {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    padding: 16px 18px 22px;
-    background: linear-gradient(to top, var(--bg) 60%, transparent);
+  .floating-footer {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 16px 22px 22px;
+    background: linear-gradient(to top, var(--bg) 70%, transparent);
+    z-index: 3;
   }
-  .select__count {
-    display: flex; justify-content: center; align-items: center;
-    margin-bottom: 12px;
-    font-size: 13px;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .select__count strong { color: var(--ink); margin: 0 4px; font-family: 'Fraunces', serif; font-size: 16px; }
-  .btn-make {
-    width: 100%;
-    padding: 20px;
-    background: var(--ink);
-    color: var(--bg);
-    border: none;
-    border-radius: 18px;
-    font-size: 16px; font-weight: 700;
-    cursor: pointer;
-    transition: opacity .2s;
-  }
-  .btn-make:disabled { opacity: .35; cursor: not-allowed; }
+  .floating-footer__count { display: flex; justify-content: center; align-items: center; margin-bottom: 12px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .floating-footer__count strong { color: var(--ink); margin: 0 4px; font-family: 'Fraunces', serif; font-size: 16px; }
 
-  /* ========= RESULT ========= */
-  .result {
-    padding: 20px 18px 24px;
-    align-items: center;
+  /* THEME */
+  .theme { padding: 0 0 20px; }
+  .theme__preview-wrap { flex: 0 0 auto; padding: 16px 22px 8px; display: flex; justify-content: center; background: var(--bg); }
+  #themePreview {
+    max-width: 180px; max-height: 32vh;
+    border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,.15);
+    background: #eee;
   }
-  .result__head {
-    width: 100%;
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 16px;
+  .theme__list {
+    padding: 12px 22px 120px; display: flex; gap: 10px;
+    overflow-x: auto; overflow-y: hidden; flex: 1;
+    scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
   }
-  .result__title {
-    font-family: 'Fraunces', serif;
-    font-weight: 800; font-style: italic;
-    font-size: 28px; letter-spacing: -.02em;
+  .theme__list::-webkit-scrollbar { display: none; }
+  .theme-card {
+    flex: 0 0 120px; border-radius: 14px; padding: 14px 12px;
+    cursor: pointer; display: flex; flex-direction: column; gap: 10px;
+    border: 2px solid transparent; scroll-snap-align: start;
+    transition: transform .15s ease; background: var(--card);
   }
-  .result__canvas-wrap {
-    flex: 1;
-    display: flex; align-items: center; justify-content: center;
-    width: 100%;
-    padding: 20px 0;
+  .theme-card:active { transform: scale(0.97); }
+  .theme-card.selected { border-color: var(--ink); }
+  .tc-swatch {
+    aspect-ratio: 3/4; border-radius: 8px; padding: 10px 8px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    position: relative; overflow: hidden;
   }
-  #resultImg {
-    max-width: 100%;
-    max-height: 65dvh;
-    box-shadow: 0 20px 50px rgba(0,0,0,.18);
-    border-radius: 4px;
+  .tc-cell-row { display: flex; gap: 3px; justify-content: center; position: relative; z-index: 2; }
+  .tc-cell { width: 16px; height: 20px; background: rgba(255,255,255,.4); border-radius: 2px; }
+  .tc-lbl { font-family: 'Fraunces', serif; font-style: italic; font-weight: 600; font-size: 10px; text-align: center; position: relative; z-index: 2; }
+  .tc-accent { width: 100%; height: 3px; border-radius: 2px; position: relative; z-index: 2; }
+  .tc-info { text-align: center; }
+  .tc-name { font-size: 12px; font-weight: 600; line-height: 1.2; }
+  .tc-src { font-size: 10px; color: var(--muted); margin-top: 2px; font-family: 'Fraunces', serif; font-style: italic; }
+
+  /* RESULT */
+  .result { padding: 20px 22px 24px; align-items: center; }
+  .result__head { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .result__title { font-family: 'Fraunces', serif; font-weight: 800; font-style: italic; font-size: 28px; letter-spacing: -.02em; }
+  .result__canvas-wrap { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; padding: 20px 0; }
+  #resultImg { max-width: 100%; max-height: 62dvh; box-shadow: 0 20px 50px rgba(0,0,0,.18); border-radius: 4px; }
+  .result__actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* ADMIN */
+  .admin .admin-inner { flex: 1; overflow-y: auto; padding: 0 22px 24px; }
+  .admin__card { background: var(--card); border: 1.5px solid var(--line); border-radius: 16px; padding: 18px; margin-top: 16px; }
+  .admin__card-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 18px; margin-bottom: 14px; }
+  .field { display: grid; gap: 6px; margin-bottom: 12px; }
+  .field label { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .field input[type="text"], .field select {
+    width: 100%; padding: 12px 14px;
+    border: 1.5px solid var(--line); border-radius: 10px;
+    font-family: inherit; font-size: 15px; background: #fff;
   }
-  .result__actions {
-    width: 100%;
-    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-  }
-  .btn-ghost {
-    padding: 18px;
-    background: transparent;
-    color: var(--ink);
-    border: 1.5px solid var(--line);
-    border-radius: 16px;
-    font-size: 15px; font-weight: 600;
-    cursor: pointer;
-  }
-  .btn-primary {
-    padding: 18px;
-    background: var(--pop);
-    color: var(--ink);
-    border: 1.5px solid var(--line);
-    border-radius: 16px;
-    font-size: 15px; font-weight: 700;
-    cursor: pointer;
-  }
+  .field input[type="text"]:focus, .field select:focus { outline: none; border-color: var(--pop); }
+  .color-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .color-field { display: flex; flex-direction: column; gap: 4px; align-items: center; }
+  .color-field label { font-size: 11px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+  .color-field input[type="color"] { width: 100%; height: 44px; border: 1.5px solid var(--line); border-radius: 10px; padding: 2px; cursor: pointer; background: #fff; }
+  .admin__list { display: grid; gap: 8px; margin-top: 10px; }
+  .admin-item { display: grid; grid-template-columns: 48px 1fr auto; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+  .admin-item__swatch { width: 48px; height: 48px; border-radius: 6px; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .admin-item__info { min-width: 0; }
+  .admin-item__name { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; padding: 4px 8px; border-radius: 4px; display: inline-block; }
+  .admin-item__meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .admin-item__del { background: none; border: 1px solid var(--line); color: var(--ink); width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 14px; }
+  .admin-empty { color: var(--muted); font-size: 13px; text-align: center; padding: 20px; font-style: italic; }
+
+  .pattern-options, .image-options { display: none; }
+  .pattern-options.show, .image-options.show { display: block; }
+  .sub-note { font-size: 11px; color: var(--muted); margin-top: -4px; margin-bottom: 8px; line-height: 1.4; }
 
   .hidden-canvas { display: none; }
-  .error-msg {
-    margin-top: 20px;
-    padding: 14px;
-    background: #fff;
-    border: 1.5px solid var(--line);
-    border-radius: 12px;
-    font-size: 13px;
-    color: var(--ink);
-    line-height: 1.5;
-    display: none;
-  }
+  .error-msg { margin-top: 20px; padding: 14px; background: #fff; border: 1.5px solid var(--line); border-radius: 12px; font-size: 13px; color: var(--ink); line-height: 1.5; display: none; }
   .error-msg.show { display: block; }
 </style>
 </head>
@@ -388,33 +333,42 @@
         <span class="mono" style="font-size:14px;">no.001</span>
       </div>
       <h1 class="intro__title">Photo<br><em>Booth</em></h1>
-      <p class="intro__lead">5초 타이머로 여덟 컷을 찍고, 마음에 드는 네 컷을 골라 한 장으로 만들어요.</p>
-
+      <p class="intro__lead">레이아웃을 고르고, 8컷을 촬영한 뒤 원하는 사진과 테마를 골라 완성하세요.</p>
       <div class="steps">
-        <div class="step">
-          <div class="step__n">1</div>
-          <div class="step__t">카메라로 8장 촬영</div>
-          <div class="step__m">5s each</div>
-        </div>
-        <div class="step">
-          <div class="step__n">2</div>
-          <div class="step__t">마음에 드는 4장 선택</div>
-          <div class="step__m">pick 4/8</div>
-        </div>
-        <div class="step">
-          <div class="step__n">3</div>
-          <div class="step__t">2×2 그리드로 저장</div>
-          <div class="step__m">download</div>
-        </div>
+        <div class="step"><div class="step__n">1</div><div class="step__t">레이아웃 선택</div><div class="step__m">pick layout</div></div>
+        <div class="step"><div class="step__n">2</div><div class="step__t">8컷 촬영 · 8초 간격</div><div class="step__m">auto shoot</div></div>
+        <div class="step"><div class="step__n">3</div><div class="step__t">사진 고르고 테마 입히기</div><div class="step__m">curate</div></div>
       </div>
-
       <div class="error-msg" id="errorMsg"></div>
+      <a class="admin-link" id="adminLink">관리자 모드 · Admin</a>
     </div>
-
     <button class="cta" id="btnStart">
       <span>START SHOOTING</span>
       <span class="cta__arrow">→</span>
     </button>
+  </section>
+
+  <!-- LAYOUT -->
+  <section class="screen layout" id="screenLayout">
+    <div class="topbar">
+      <button class="back" data-back="intro">←</button>
+      <span class="badge">STEP 1 / 3</span>
+    </div>
+    <div class="layout__head">
+      <h2 class="section-title">Choose<br><em>Layout</em></h2>
+      <p class="section-sub">결과물의 그리드 모양을 먼저 정해주세요. 촬영은 항상 8컷이며, 레이아웃에 따라 선택할 장수가 달라져요.</p>
+    </div>
+    <div class="layout__list" id="layoutList"></div>
+    <div class="layout__footer">
+      <button class="btn" id="btnLayoutNext" disabled>CONTINUE →</button>
+    </div>
+  </section>
+
+  <!-- GET READY -->
+  <section class="screen getready" id="screenGetReady">
+    <div class="getready__label">GET READY</div>
+    <div class="getready__num" id="getReadyNum">5</div>
+    <div class="getready__msg">곧 카메라가 켜져요.<br>포즈 잡을 준비!</div>
   </section>
 
   <!-- CAMERA -->
@@ -423,26 +377,44 @@
       <button class="cam-close" id="btnClose">✕</button>
       <div class="cam-hud__counter"><span id="shotIndex">1</span><em> / 8</em></div>
     </div>
-    <div class="video-wrap">
-      <video id="video" autoplay playsinline muted></video>
-    </div>
+    <div class="video-wrap"><video id="video" autoplay playsinline muted></video></div>
     <div class="countdown" id="countdown"></div>
+    <div class="nicemsg" id="niceMsg">Nice!</div>
     <div class="flash" id="flash"></div>
     <div class="thumbstrip" id="ticks"></div>
   </section>
 
   <!-- SELECT -->
   <section class="screen select" id="screenSelect">
+    <div class="topbar">
+      <span class="badge">STEP 2 / 3</span>
+      <span class="mono" style="font-size:13px;" id="selectLayoutName"></span>
+    </div>
     <div class="select__head">
-      <div>
-        <div class="select__title"><em>Pick</em> Four</div>
-      </div>
-      <div class="select__sub">tap to select</div>
+      <div><h2 class="section-title"><em>Pick</em><br>your shots</h2></div>
     </div>
     <div class="grid" id="gridThumbs"></div>
-    <div class="select__footer">
-      <div class="select__count">selected <strong id="selCount">0</strong> / 4</div>
-      <button class="btn-make" id="btnMake" disabled>MAKE PHOTO STRIP</button>
+    <div class="floating-footer">
+      <div class="floating-footer__count">selected <strong id="selCount">0</strong> / <span id="selTarget">4</span></div>
+      <button class="btn" id="btnMake" disabled>CHOOSE THEME →</button>
+    </div>
+  </section>
+
+  <!-- THEME -->
+  <section class="screen theme" id="screenTheme">
+    <div class="topbar">
+      <button class="back" data-back="select">←</button>
+      <span class="badge">STEP 3 / 3</span>
+    </div>
+    <div class="layout__head">
+      <h2 class="section-title">Pick<br><em>a theme</em></h2>
+    </div>
+    <div class="theme__preview-wrap">
+      <img id="themePreview" alt="preview" />
+    </div>
+    <div class="theme__list" id="themeList"></div>
+    <div class="floating-footer">
+      <button class="btn btn-primary" id="btnFinish">SAVE PHOTO ↓</button>
     </div>
   </section>
 
@@ -452,12 +424,88 @@
       <div class="result__title">Done.</div>
       <span class="badge"><span class="dot"></span> SAVED</span>
     </div>
-    <div class="result__canvas-wrap">
-      <img id="resultImg" alt="photo result" />
-    </div>
+    <div class="result__canvas-wrap"><img id="resultImg" alt="photo result" /></div>
     <div class="result__actions">
-      <button class="btn-ghost" id="btnRetry">RETAKE</button>
-      <button class="btn-primary" id="btnDownload">DOWNLOAD ↓</button>
+      <button class="btn btn-ghost" id="btnRetry">RETAKE</button>
+      <button class="btn btn-primary" id="btnDownload">DOWNLOAD ↓</button>
+    </div>
+  </section>
+
+  <!-- ADMIN -->
+  <section class="screen admin" id="screenAdmin">
+    <div class="topbar">
+      <button class="back" data-back="intro">←</button>
+      <span class="badge"><span class="dot"></span> ADMIN</span>
+    </div>
+    <div class="admin-inner">
+      <h2 class="section-title">Theme<br><em>Manager</em></h2>
+      <p class="section-sub">테마는 <strong>이 브라우저(기기)에만</strong> 저장돼요. 모든 사용자에게 공유하려면 <code>themes.json</code> 파일에 추가하세요.</p>
+
+      <div class="admin__card">
+        <div class="admin__card-title">+ 새 테마 추가</div>
+        <div class="field">
+          <label>이름</label>
+          <input type="text" id="newThemeName" placeholder="예: 여름 바다" maxlength="20" />
+        </div>
+        <div class="field">
+          <label>라벨 문구</label>
+          <input type="text" id="newThemeLabel" placeholder="예: Summer Memories" maxlength="24" />
+        </div>
+        <div class="color-row">
+          <div class="color-field"><label>프레임</label><input type="color" id="newThemeBg" value="#0F4C81" /></div>
+          <div class="color-field"><label>글씨</label><input type="color" id="newThemeInk" value="#F3EEE5" /></div>
+          <div class="color-field"><label>강조</label><input type="color" id="newThemePop" value="#FFC857" /></div>
+        </div>
+
+        <div class="field" style="margin-top:14px;">
+          <label>배경 효과</label>
+          <select id="newThemeDecor">
+            <option value="none">없음 (단색 배경)</option>
+            <option value="dots">땡땡이 (Dots)</option>
+            <option value="stripes">줄무늬 (Stripes)</option>
+            <option value="checker">체크무늬 (Checker)</option>
+            <option value="grid">모눈 (Grid)</option>
+            <option value="hearts">하트 (Hearts)</option>
+            <option value="image">이미지 배경</option>
+          </select>
+        </div>
+
+        <div class="pattern-options" id="patternOptions">
+          <div class="color-row">
+            <div class="color-field"><label>패턴 색</label><input type="color" id="newPatternColor" value="#ffffff" /></div>
+            <div class="color-field" style="grid-column: span 2;">
+              <label>투명도 <span id="newPatternOpacityLbl">0.25</span></label>
+              <input type="range" id="newPatternOpacity" min="0.05" max="1" step="0.05" value="0.25" style="width:100%;" />
+            </div>
+          </div>
+          <div class="sub-note">크기·간격은 테마에 어울리게 자동 조정됩니다.</div>
+        </div>
+
+        <div class="image-options" id="imageOptions">
+          <div class="field">
+            <label>이미지 URL</label>
+            <input type="text" id="newImageUrl" placeholder="https://... 또는 ./backgrounds/flower.jpg" />
+            <div class="sub-note">⚠️ 외부 URL은 CORS를 허용해야 해요. 같은 도메인(레포)에 올리는 게 가장 안전합니다.</div>
+          </div>
+          <div class="field">
+            <label>오버레이(덮개) 투명도 <span id="newOverlayOpacityLbl">0.3</span></label>
+            <input type="range" id="newOverlayOpacity" min="0" max="0.9" step="0.05" value="0.3" style="width:100%;" />
+            <div class="sub-note">글씨가 잘 보이도록 이미지를 덮는 정도. 프레임 색으로 덮입니다.</div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" id="btnAddTheme" style="margin-top:14px;">테마 등록하기</button>
+      </div>
+
+      <div class="admin__card">
+        <div class="admin__card-title">등록된 커스텀 테마</div>
+        <div class="admin__list" id="adminList"></div>
+      </div>
+
+      <div class="admin__card">
+        <div class="admin__card-title">기본 + JSON 테마</div>
+        <div class="admin__list" id="builtinList"></div>
+      </div>
     </div>
   </section>
 
@@ -467,79 +515,145 @@
 
 <script>
 (() => {
+  // ============ 설정 ============
   const TOTAL_SHOTS = 8;
+  const GET_READY_SECONDS = 5;
   const TIMER_SECONDS = 5;
-  const PICK_COUNT = 4;
+  const SHOT_INTERVAL = 8;
+  const REST_SECONDS = SHOT_INTERVAL - TIMER_SECONDS;
+  const JSON_THEMES_URL = './themes.json'; // 서버에 배포된 파일
 
-  // State
+  const LAYOUTS = [
+    { id: '2x2', name: 'Classic 2×2', cols: 2, rows: 2, picks: 4, desc: 'pick 4 shots' },
+    { id: '4x1', name: 'Strip 4×1',   cols: 1, rows: 4, picks: 4, desc: 'pick 4 shots' },
+    { id: '2x3', name: 'Grid 2×3',    cols: 2, rows: 3, picks: 6, desc: 'pick 6 shots' },
+    { id: '3x2', name: 'Wide 3×2',    cols: 3, rows: 2, picks: 6, desc: 'pick 6 shots' },
+  ];
+
+  const BUILTIN_THEMES = [
+    { id: 'classic',  name: 'Classic Black', bg: '#111111', ink: '#F3EEE5', pop: '#FF5233', label: 'Photo Booth' },
+    { id: 'cream',    name: 'Cream Paper',   bg: '#F3EEE5', ink: '#1a1a1a', pop: '#FF5233', label: 'Memories'    },
+    { id: 'rose',     name: 'Rose Blossom',  bg: '#F4C4C9', ink: '#3B1F2B', pop: '#8B2A43', label: 'With Love'   },
+    { id: 'forest',   name: 'Forest Walk',   bg: '#2D4A3E', ink: '#F3EEE5', pop: '#E8B059', label: 'Into Woods'  },
+    { id: 'midnight', name: 'Midnight',      bg: '#0A1A2E', ink: '#E8EEF5', pop: '#64C8FF', label: 'Stargazers'  },
+    { id: 'sunset',   name: 'Sunset',        bg: '#F28C4F', ink: '#2B1810', pop: '#FFE8C8', label: 'Golden Hour' },
+  ];
+
+  // ============ 상태 ============
   let stream = null;
-  let photos = [];        // dataURL 배열
+  let photos = [];
   let selected = new Set();
   let shooting = false;
   let finalDataUrl = null;
+  let chosenLayout = null;
+  let chosenTheme = null;
+  let jsonThemes = [];            // themes.json에서 로드된 테마
+  const imageCache = new Map();   // url → Image (디코드된 이미지 캐시)
 
-  // Elements
   const $ = (id) => document.getElementById(id);
   const screens = {
-    intro: $('screenIntro'),
-    camera: $('screenCamera'),
-    select: $('screenSelect'),
-    result: $('screenResult'),
+    intro: $('screenIntro'), layout: $('screenLayout'),
+    getready: $('screenGetReady'), camera: $('screenCamera'),
+    select: $('screenSelect'), theme: $('screenTheme'),
+    result: $('screenResult'), admin: $('screenAdmin'),
   };
   const video = $('video');
-  const countdownEl = $('countdown');
-  const flashEl = $('flash');
-  const ticksEl = $('ticks');
-  const shotIndexEl = $('shotIndex');
-  const gridThumbs = $('gridThumbs');
-  const btnMake = $('btnMake');
-  const selCountEl = $('selCount');
-  const resultImg = $('resultImg');
-  const errorMsg = $('errorMsg');
-
-  const captureCanvas = $('captureCanvas');
-  const gridCanvas = $('gridCanvas');
 
   function showScreen(name) {
     Object.values(screens).forEach(s => s.classList.remove('active'));
     screens[name].classList.add('active');
   }
 
-  function showError(msg) {
-    errorMsg.textContent = msg;
-    errorMsg.classList.add('show');
+  // ============ 테마 로드 ============
+  async function loadJsonThemes() {
+    try {
+      const res = await fetch(JSON_THEMES_URL, { cache: 'no-cache' });
+      if (!res.ok) throw new Error('not found');
+      const data = await res.json();
+      jsonThemes = Array.isArray(data.themes) ? data.themes : [];
+    } catch (e) {
+      // JSON 파일이 없거나 파싱 실패시 조용히 무시
+      jsonThemes = [];
+    }
   }
 
-  // ---------- 카메라 시작 ----------
+  // 저장소 (커스텀 테마)
+  const STORAGE_KEY = 'photobooth_customThemes_v2';
+  function loadCustomThemes() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+    catch { return []; }
+  }
+  function saveCustomThemes(arr) { localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }
+
+  function allThemes() { return [...BUILTIN_THEMES, ...jsonThemes, ...loadCustomThemes()]; }
+
+  // ============ 이미지 프리로드 ============
+  function loadImage(url) {
+    if (imageCache.has(url)) return Promise.resolve(imageCache.get(url));
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => { imageCache.set(url, img); resolve(img); };
+      img.onerror = () => reject(new Error('image load failed: ' + url));
+      img.src = url;
+    });
+  }
+
+  // ============ 레이아웃 카드 ============
+  function renderLayouts() {
+    const list = $('layoutList');
+    list.innerHTML = '';
+    LAYOUTS.forEach(lo => {
+      const card = document.createElement('div');
+      card.className = 'layout-card';
+      card.dataset.id = lo.id;
+      let preview = `<div class="lc-preview" style="grid-template-columns: repeat(${lo.cols}, 1fr); grid-template-rows: repeat(${lo.rows}, 1fr);">`;
+      for (let i = 0; i < lo.cols * lo.rows; i++) preview += '<div class="lc-cell"></div>';
+      preview += '</div>';
+      card.innerHTML = `${preview}<div class="lc-info"><div class="lc-name">${lo.name}</div><div class="lc-meta">${lo.desc}</div></div>`;
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.layout-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        chosenLayout = lo;
+        $('btnLayoutNext').disabled = false;
+      });
+      list.appendChild(card);
+    });
+  }
+
+  // ============ 카메라 파트 ============
+  function runGetReady() {
+    return new Promise(resolve => {
+      let n = GET_READY_SECONDS;
+      const el = $('getReadyNum');
+      el.textContent = n;
+      const id = setInterval(() => {
+        n--;
+        if (n <= 0) { clearInterval(id); resolve(); }
+        else el.textContent = n;
+      }, 1000);
+    });
+  }
+
   async function startCamera() {
     try {
       stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: 'user',
-          width:  { ideal: 1280 },
-          height: { ideal: 1920 },
-        },
-        audio: false,
+        video: { facingMode: 'user', width:{ideal:1280}, height:{ideal:1920} }, audio: false,
       });
       video.srcObject = stream;
       await video.play();
       return true;
     } catch (err) {
       console.error(err);
-      showError('카메라 접근이 거부되었어요. 브라우저 주소창의 🔒 권한 설정에서 카메라를 허용하고 새로고침 해주세요. (HTTPS 또는 localhost 환경에서만 동작합니다)');
+      showError('카메라 접근이 거부되었어요. 브라우저 권한 설정에서 카메라를 허용하고 새로고침 해주세요.');
       return false;
     }
   }
+  function stopCamera() { if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; } }
+  function showError(msg) { const e = $('errorMsg'); e.textContent = msg; e.classList.add('show'); }
 
-  function stopCamera() {
-    if (stream) {
-      stream.getTracks().forEach(t => t.stop());
-      stream = null;
-    }
-  }
-
-  // ---------- 틱(진행바) 초기화 ----------
   function renderTicks() {
+    const ticksEl = $('ticks');
     ticksEl.innerHTML = '';
     for (let i = 0; i < TOTAL_SHOTS; i++) {
       const t = document.createElement('div');
@@ -548,264 +662,554 @@
     }
   }
 
-  // ---------- 한 컷 촬영 ----------
   function captureFrame() {
-    const w = video.videoWidth;
-    const h = video.videoHeight;
-    captureCanvas.width = w;
-    captureCanvas.height = h;
-    const ctx = captureCanvas.getContext('2d');
-
-    // 사용자가 보는 것과 동일하게 좌우반전 저장 (셀카 느낌)
+    const w = video.videoWidth, h = video.videoHeight;
+    const c = $('captureCanvas');
+    c.width = w; c.height = h;
+    const ctx = c.getContext('2d');
     ctx.save();
-    ctx.translate(w, 0);
-    ctx.scale(-1, 1);
+    ctx.translate(w, 0); ctx.scale(-1, 1);
     ctx.drawImage(video, 0, 0, w, h);
     ctx.restore();
-
-    return captureCanvas.toDataURL('image/jpeg', 0.92);
+    return c.toDataURL('image/jpeg', 0.92);
   }
 
-  function flashOnce() {
-    flashEl.classList.remove('on');
-    // force reflow
-    void flashEl.offsetWidth;
-    flashEl.classList.add('on');
-  }
-
-  function showCountdown(n) {
-    countdownEl.textContent = n;
-    countdownEl.classList.remove('pop');
-    void countdownEl.offsetWidth;
-    countdownEl.classList.add('pop');
-  }
-
-  // 5초 카운트다운 1회
-  function runTimer() {
-    return new Promise((resolve) => {
+  function flashOnce() { const f = $('flash'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); }
+  function showNice() { const n = $('niceMsg'); n.classList.remove('show'); void n.offsetWidth; n.classList.add('show'); }
+  function showCountdown(n) { const el = $('countdown'); el.textContent = n; el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
+  function runCountdown() {
+    return new Promise(resolve => {
       let n = TIMER_SECONDS;
       showCountdown(n);
       const id = setInterval(() => {
+        if (!shooting) { clearInterval(id); resolve(); return; }
         n--;
-        if (n <= 0) {
-          clearInterval(id);
-          countdownEl.textContent = '';
-          resolve();
-        } else {
-          showCountdown(n);
-        }
+        if (n <= 0) { clearInterval(id); $('countdown').textContent = ''; resolve(); }
+        else showCountdown(n);
       }, 1000);
     });
   }
+  function wait(sec) { return new Promise(r => setTimeout(r, sec * 1000)); }
 
-  // 8회 반복 촬영
   async function shootSequence() {
-    shooting = true;
-    photos = [];
-    renderTicks();
-
+    shooting = true; photos = []; renderTicks();
     for (let i = 0; i < TOTAL_SHOTS; i++) {
-      shotIndexEl.textContent = (i + 1);
-      await runTimer();
-
-      // 찰칵
+      if (!shooting) return;
+      $('shotIndex').textContent = (i + 1);
+      if (i > 0) { showNice(); await wait(REST_SECONDS); if (!shooting) return; }
+      await runCountdown(); if (!shooting) return;
       flashOnce();
       const data = captureFrame();
       photos.push(data);
       renderTicks();
-
-      // 찰칵 후 잠깐 쉼
-      await new Promise(r => setTimeout(r, 500));
+      await wait(0.5);
     }
-
     shooting = false;
     stopCamera();
     goToSelect();
   }
 
-  // ---------- 선택 화면 ----------
+  // ============ 선택 화면 ============
   function goToSelect() {
     selected.clear();
+    $('selTarget').textContent = chosenLayout.picks;
+    $('selectLayoutName').textContent = chosenLayout.name;
     updateSelCount();
-    gridThumbs.innerHTML = '';
-
+    const grid = $('gridThumbs');
+    grid.innerHTML = '';
     photos.forEach((src, idx) => {
       const el = document.createElement('div');
       el.className = 'thumb';
       el.dataset.idx = idx;
-      el.innerHTML = `
-        <img src="${src}" alt="shot ${idx + 1}">
-        <div class="thumb__badge"></div>
-      `;
+      el.innerHTML = `<img src="${src}" alt="shot ${idx+1}"><div class="thumb__badge"></div>`;
       el.addEventListener('click', () => toggleSelect(idx, el));
-      gridThumbs.appendChild(el);
+      grid.appendChild(el);
     });
-
     showScreen('select');
   }
 
   function toggleSelect(idx, el) {
-    if (selected.has(idx)) {
-      selected.delete(idx);
-      el.classList.remove('selected');
-    } else {
-      if (selected.size >= PICK_COUNT) return; // 4장 초과 금지
-      selected.add(idx);
-      el.classList.add('selected');
-    }
-    updateOrderBadges();
-    updateSelCount();
+    if (selected.has(idx)) { selected.delete(idx); el.classList.remove('selected'); }
+    else { if (selected.size >= chosenLayout.picks) return; selected.add(idx); el.classList.add('selected'); }
+    updateOrderBadges(); updateSelCount();
   }
-
   function updateOrderBadges() {
     const order = [...selected];
-    document.querySelectorAll('.thumb').forEach(el => {
-      const idx = +el.dataset.idx;
+    document.querySelectorAll('#gridThumbs .thumb').forEach(el => {
       const badge = el.querySelector('.thumb__badge');
-      const pos = order.indexOf(idx);
+      const pos = order.indexOf(+el.dataset.idx);
       badge.textContent = pos >= 0 ? (pos + 1) : '';
     });
   }
-
   function updateSelCount() {
-    selCountEl.textContent = selected.size;
-    btnMake.disabled = selected.size !== PICK_COUNT;
+    $('selCount').textContent = selected.size;
+    $('btnMake').disabled = selected.size !== chosenLayout.picks;
   }
 
-  // ---------- 그리드 합성 ----------
-  function buildGrid() {
+  // ============ 테마 화면 ============
+  function goToTheme() {
+    renderThemeList();
+    chosenTheme = allThemes()[0];
+    highlightThemeCard(chosenTheme.id);
+    renderPreview();
+    showScreen('theme');
+  }
+
+  function swatchBgStyle(t) {
+    // 미리보기 카드의 뒷배경 간이 렌더
+    let bg = `background:${t.bg};`;
+    if (t.pattern?.type === 'dots') {
+      const c = t.pattern.color, op = (t.pattern.opacity ?? 0.3);
+      bg += `background-image: radial-gradient(${hexAlpha(c, op)} 22%, transparent 23%); background-size: 14px 14px;`;
+    } else if (t.pattern?.type === 'stripes') {
+      const c = t.pattern.color, op = (t.pattern.opacity ?? 0.25);
+      bg += `background-image: repeating-linear-gradient(${t.pattern.angle || 45}deg, ${hexAlpha(c, op)} 0 4px, transparent 4px 12px);`;
+    } else if (t.pattern?.type === 'grid') {
+      const c = t.pattern.color, op = (t.pattern.opacity ?? 0.2);
+      bg += `background-image: linear-gradient(${hexAlpha(c, op)} 1px, transparent 1px), linear-gradient(90deg, ${hexAlpha(c, op)} 1px, transparent 1px); background-size: 16px 16px;`;
+    } else if (t.pattern?.type === 'checker') {
+      const c = t.pattern.color, op = (t.pattern.opacity ?? 0.1);
+      bg += `background-image: linear-gradient(45deg, ${hexAlpha(c, op)} 25%, transparent 25%, transparent 75%, ${hexAlpha(c, op)} 75%), linear-gradient(45deg, ${hexAlpha(c, op)} 25%, transparent 25%, transparent 75%, ${hexAlpha(c, op)} 75%); background-size: 16px 16px; background-position: 0 0, 8px 8px;`;
+    } else if (t.pattern?.type === 'hearts') {
+      bg += `background-image: radial-gradient(${hexAlpha(t.pattern.color, t.pattern.opacity ?? 0.3)} 20%, transparent 22%); background-size: 18px 18px;`;
+    } else if (t.backgroundImage?.url) {
+      bg += `background-image: linear-gradient(${hexAlpha(t.backgroundImage.overlayColor || t.bg, t.backgroundImage.overlayOpacity ?? 0.3)}, ${hexAlpha(t.backgroundImage.overlayColor || t.bg, t.backgroundImage.overlayOpacity ?? 0.3)}), url("${t.backgroundImage.url}"); background-size: cover; background-position: center;`;
+    }
+    return bg + `color:${t.ink};`;
+  }
+
+  function hexAlpha(hex, alpha) {
+    if (!hex) return `rgba(0,0,0,${alpha})`;
+    const h = hex.replace('#', '');
+    const r = parseInt(h.substring(0,2), 16);
+    const g = parseInt(h.substring(2,4), 16);
+    const b = parseInt(h.substring(4,6), 16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  function renderThemeList() {
+    const list = $('themeList');
+    list.innerHTML = '';
+    const themes = allThemes();
+    const customIds = new Set(loadCustomThemes().map(t => t.id));
+    const jsonIds = new Set(jsonThemes.map(t => t.id));
+    themes.forEach(t => {
+      const card = document.createElement('div');
+      card.className = 'theme-card';
+      card.dataset.id = t.id;
+      const src = customIds.has(t.id) ? 'custom' : (jsonIds.has(t.id) ? 'shared' : 'built-in');
+      card.innerHTML = `
+        <div class="tc-swatch" style="${swatchBgStyle(t)}">
+          <div class="tc-cell-row"><div class="tc-cell"></div><div class="tc-cell"></div></div>
+          <div class="tc-cell-row"><div class="tc-cell"></div><div class="tc-cell"></div></div>
+          <div class="tc-accent" style="background:${t.pop};"></div>
+          <div class="tc-lbl">${escapeHtml(t.label || '')}</div>
+        </div>
+        <div class="tc-info">
+          <div class="tc-name">${escapeHtml(t.name)}</div>
+          <div class="tc-src">${src}</div>
+        </div>
+      `;
+      card.addEventListener('click', () => {
+        chosenTheme = t;
+        highlightThemeCard(t.id);
+        renderPreview();
+      });
+      list.appendChild(card);
+    });
+  }
+  function highlightThemeCard(id) {
+    document.querySelectorAll('.theme-card').forEach(c => c.classList.toggle('selected', c.dataset.id === id));
+  }
+
+  // ============ 캔버스 그리기 ============
+  function drawCover(ctx, img, dx, dy, dw, dh) {
+    const ir = img.width / img.height, tr = dw / dh;
+    let sx, sy, sw, sh;
+    if (ir > tr) { sh = img.height; sw = sh * tr; sx = (img.width - sw) / 2; sy = 0; }
+    else { sw = img.width; sh = sw / tr; sx = 0; sy = (img.height - sh) / 2; }
+    ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
+  }
+
+  // 땡땡이
+  function drawDots(ctx, W, H, opt) {
+    const {color='#fff', size=10, spacing=40, opacity=0.3} = opt || {};
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = color;
+    for (let y = spacing/2; y < H; y += spacing) {
+      for (let x = spacing/2; x < W; x += spacing) {
+        ctx.beginPath();
+        ctx.arc(x, y, size/2, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
+
+  // 줄무늬
+  function drawStripes(ctx, W, H, opt) {
+    const {color='#fff', size=20, spacing=40, opacity=0.25, angle=45} = opt || {};
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = color;
+    // 중앙 기준으로 회전시키고 캔버스보다 큰 사각형 채우기
+    const diag = Math.sqrt(W*W + H*H);
+    ctx.translate(W/2, H/2);
+    ctx.rotate(angle * Math.PI / 180);
+    for (let x = -diag; x < diag; x += spacing) {
+      ctx.fillRect(x, -diag, size, diag*2);
+    }
+    ctx.restore();
+  }
+
+  // 체크무늬
+  function drawChecker(ctx, W, H, opt) {
+    const {color='#000', size=32, opacity=0.1} = opt || {};
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = color;
+    for (let y = 0; y < H; y += size) {
+      for (let x = 0; x < W; x += size) {
+        if (((x/size | 0) + (y/size | 0)) % 2 === 0) ctx.fillRect(x, y, size, size);
+      }
+    }
+    ctx.restore();
+  }
+
+  // 모눈
+  function drawGrid(ctx, W, H, opt) {
+    const {color='#fff', size=40, lineWidth=1, opacity=0.2} = opt || {};
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
+    for (let x = 0; x <= W; x += size) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+    for (let y = 0; y <= H; y += size) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+    ctx.restore();
+  }
+
+  // 하트
+  function drawHearts(ctx, W, H, opt) {
+    const {color='#e85d75', size=14, spacing=50, opacity=0.35} = opt || {};
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = color;
+    for (let y = spacing/2; y < H; y += spacing) {
+      let rowOffset = ((y / spacing) | 0) % 2 === 0 ? 0 : spacing/2;
+      for (let x = spacing/2 + rowOffset; x < W; x += spacing) {
+        drawHeartPath(ctx, x, y, size);
+        ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
+  function drawHeartPath(ctx, cx, cy, size) {
+    ctx.beginPath();
+    const s = size;
+    ctx.moveTo(cx, cy + s*0.3);
+    ctx.bezierCurveTo(cx, cy, cx - s, cy, cx - s, cy - s*0.4);
+    ctx.bezierCurveTo(cx - s, cy - s, cx, cy - s, cx, cy - s*0.4);
+    ctx.bezierCurveTo(cx, cy - s, cx + s, cy - s, cx + s, cy - s*0.4);
+    ctx.bezierCurveTo(cx + s, cy, cx, cy, cx, cy + s*0.3);
+    ctx.closePath();
+  }
+
+  // 패턴 총괄
+  function drawPattern(ctx, W, H, pattern) {
+    if (!pattern || !pattern.type) return;
+    switch (pattern.type) {
+      case 'dots':    drawDots(ctx, W, H, pattern); break;
+      case 'stripes': drawStripes(ctx, W, H, pattern); break;
+      case 'checker': drawChecker(ctx, W, H, pattern); break;
+      case 'grid':    drawGrid(ctx, W, H, pattern); break;
+      case 'hearts':  drawHearts(ctx, W, H, pattern); break;
+    }
+  }
+
+  // 배경 이미지
+  async function drawBackgroundImage(ctx, W, H, bgImg) {
+    if (!bgImg?.url) return;
+    try {
+      const img = await loadImage(bgImg.url);
+      const op = bgImg.opacity ?? 1;
+      ctx.save();
+      ctx.globalAlpha = op;
+      if (bgImg.fit === 'contain') {
+        const r = Math.min(W/img.width, H/img.height);
+        const dw = img.width * r, dh = img.height * r;
+        ctx.drawImage(img, (W-dw)/2, (H-dh)/2, dw, dh);
+      } else if (bgImg.fit === 'tile') {
+        const pat = ctx.createPattern(img, 'repeat');
+        ctx.fillStyle = pat;
+        ctx.fillRect(0, 0, W, H);
+      } else {
+        // cover (기본)
+        drawCover(ctx, img, 0, 0, W, H);
+      }
+      ctx.restore();
+      // 오버레이
+      if (bgImg.overlayColor && (bgImg.overlayOpacity ?? 0) > 0) {
+        ctx.save();
+        ctx.globalAlpha = bgImg.overlayOpacity;
+        ctx.fillStyle = bgImg.overlayColor;
+        ctx.fillRect(0, 0, W, H);
+        ctx.restore();
+      }
+    } catch (e) {
+      console.warn('배경 이미지 로드 실패, 단색 배경 사용:', e.message);
+    }
+  }
+
+  async function buildGrid(theme) {
     const order = [...selected];
-    if (order.length !== PICK_COUNT) return;
+    if (order.length !== chosenLayout.picks) return null;
 
-    // 2x2 그리드. 각 셀 600x800 (3:4 비율), 프레임 여백 40, 하단 라벨 100
     const CELL_W = 600, CELL_H = 800;
-    const GAP = 16;
-    const PAD = 40;
-    const FOOTER = 110;
+    const GAP = 16, PAD = 40, FOOTER = 110;
+    const W = PAD * 2 + CELL_W * chosenLayout.cols + GAP * (chosenLayout.cols - 1);
+    const H = PAD + CELL_H * chosenLayout.rows + GAP * (chosenLayout.rows - 1) + FOOTER;
 
-    const W = PAD * 2 + CELL_W * 2 + GAP;
-    const H = PAD + CELL_H * 2 + GAP + FOOTER;
-
+    const gridCanvas = $('gridCanvas');
     gridCanvas.width = W;
     gridCanvas.height = H;
     const ctx = gridCanvas.getContext('2d');
 
-    // 프레임 배경
-    ctx.fillStyle = '#111111';
+    // 1) 단색
+    ctx.fillStyle = theme.bg;
     ctx.fillRect(0, 0, W, H);
 
-    // 이미지 4장을 차례로 그리기
-    const positions = [
-      [PAD,                PAD],
-      [PAD + CELL_W + GAP, PAD],
-      [PAD,                PAD + CELL_H + GAP],
-      [PAD + CELL_W + GAP, PAD + CELL_H + GAP],
-    ];
+    // 2) 배경 효과 (패턴 또는 이미지)
+    if (theme.backgroundImage?.url) {
+      await drawBackgroundImage(ctx, W, H, theme.backgroundImage);
+    } else if (theme.pattern) {
+      drawPattern(ctx, W, H, theme.pattern);
+    }
 
-    const loadPromises = order.map((idx) => new Promise((res) => {
+    // 3) 사진들
+    const positions = [];
+    for (let r = 0; r < chosenLayout.rows; r++) {
+      for (let c = 0; c < chosenLayout.cols; c++) {
+        positions.push([ PAD + c * (CELL_W + GAP), PAD + r * (CELL_H + GAP) ]);
+      }
+    }
+    const imgs = await Promise.all(order.map(idx => new Promise(res => {
       const img = new Image();
       img.onload = () => res(img);
       img.src = photos[idx];
-    }));
+    })));
+    imgs.forEach((img, i) => {
+      const [x, y] = positions[i];
+      drawCover(ctx, img, x, y, CELL_W, CELL_H);
+    });
 
-    return Promise.all(loadPromises).then((imgs) => {
-      imgs.forEach((img, i) => {
-        const [x, y] = positions[i];
-        drawCover(ctx, img, x, y, CELL_W, CELL_H);
+    // 4) 라벨 + 날짜
+    ctx.textBaseline = 'middle';
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
+
+    ctx.fillStyle = theme.ink;
+    ctx.font = `italic 600 ${Math.min(48, Math.max(32, W/22))}px Fraunces, serif`;
+    ctx.textAlign = 'left';
+    ctx.fillText(theme.label || 'Photo Booth', PAD, H - FOOTER/2);
+
+    ctx.fillStyle = theme.pop;
+    ctx.font = `500 ${Math.min(32, Math.max(22, W/30))}px Pretendard, sans-serif`;
+    ctx.textAlign = 'right';
+    ctx.fillText(dateStr, W - PAD, H - FOOTER/2);
+
+    // 이미지가 CORS 문제로 tainted면 toDataURL이 실패함
+    try {
+      return gridCanvas.toDataURL('image/jpeg', 0.95);
+    } catch (e) {
+      console.error('canvas tainted — 외부 이미지 CORS 문제 가능성:', e);
+      alert('배경 이미지 호스트에서 CORS 를 허용하지 않아 저장할 수 없어요.\n이미지를 같은 레포(예: /backgrounds/)에 올리거나 다른 테마를 선택해주세요.');
+      return null;
+    }
+  }
+
+  async function renderPreview() {
+    if (!chosenTheme) return;
+    const data = await buildGrid(chosenTheme);
+    if (data) $('themePreview').src = data;
+  }
+
+  // ============ 관리자 ============
+  function goToAdmin() { renderAdminLists(); updateDecorOptions(); showScreen('admin'); }
+
+  function updateDecorOptions() {
+    const v = $('newThemeDecor').value;
+    $('patternOptions').classList.toggle('show', ['dots','stripes','checker','grid','hearts'].includes(v));
+    $('imageOptions').classList.toggle('show', v === 'image');
+  }
+
+  function renderAdminLists() {
+    const custom = loadCustomThemes();
+    const list = $('adminList');
+    if (custom.length === 0) {
+      list.innerHTML = '<div class="admin-empty">아직 등록된 커스텀 테마가 없어요.</div>';
+    } else {
+      list.innerHTML = '';
+      custom.forEach(t => {
+        const item = document.createElement('div');
+        item.className = 'admin-item';
+        item.innerHTML = `
+          <div class="admin-item__swatch" style="${swatchBgStyle(t)}"></div>
+          <div class="admin-item__info">
+            <div class="admin-item__name" style="color:${t.ink};background:${t.bg};">${escapeHtml(t.name)}</div>
+            <div class="admin-item__meta">${escapeHtml(t.label || '')} ${decorLabel(t)}</div>
+          </div>
+          <button class="admin-item__del" data-id="${t.id}" title="삭제">🗑</button>
+        `;
+        list.appendChild(item);
       });
+      list.querySelectorAll('.admin-item__del').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (confirm('이 테마를 삭제할까요?')) {
+            saveCustomThemes(loadCustomThemes().filter(x => x.id !== btn.dataset.id));
+            renderAdminLists();
+          }
+        });
+      });
+    }
 
-      // 하단 라벨
-      ctx.fillStyle = '#F3EEE5';
-      ctx.textBaseline = 'middle';
-
-      const now = new Date();
-      const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
-
-      ctx.font = 'italic 600 42px Fraunces, serif';
-      ctx.textAlign = 'left';
-      ctx.fillText('Photo Booth', PAD, H - FOOTER/2);
-
-      ctx.font = '500 28px Pretendard, sans-serif';
-      ctx.textAlign = 'right';
-      ctx.fillStyle = '#FF5233';
-      ctx.fillText(dateStr, W - PAD, H - FOOTER/2);
-
-      finalDataUrl = gridCanvas.toDataURL('image/jpeg', 0.95);
-      resultImg.src = finalDataUrl;
-      showScreen('result');
+    const b = $('builtinList');
+    b.innerHTML = '';
+    [...BUILTIN_THEMES, ...jsonThemes].forEach(t => {
+      const source = jsonThemes.includes(t) ? 'JSON 공유' : '기본';
+      const item = document.createElement('div');
+      item.className = 'admin-item';
+      item.innerHTML = `
+        <div class="admin-item__swatch" style="${swatchBgStyle(t)}"></div>
+        <div class="admin-item__info">
+          <div class="admin-item__name" style="color:${t.ink};background:${t.bg};">${escapeHtml(t.name)}</div>
+          <div class="admin-item__meta">${escapeHtml(t.label)} ${decorLabel(t)}</div>
+        </div>
+        <span style="font-size:11px;color:var(--muted);">${source}</span>
+      `;
+      b.appendChild(item);
     });
   }
 
-  // object-fit: cover 느낌으로 그리기
-  function drawCover(ctx, img, dx, dy, dw, dh) {
-    const ir = img.width / img.height;
-    const tr = dw / dh;
-    let sx, sy, sw, sh;
-    if (ir > tr) {
-      // 이미지가 더 가로로 김 → 좌우 자르기
-      sh = img.height;
-      sw = sh * tr;
-      sx = (img.width - sw) / 2;
-      sy = 0;
-    } else {
-      sw = img.width;
-      sh = sw / tr;
-      sx = 0;
-      sy = (img.height - sh) / 2;
-    }
-    ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
+  function decorLabel(t) {
+    if (t.backgroundImage?.url) return '· 🖼 이미지';
+    if (t.pattern?.type) return `· ${t.pattern.type}`;
+    return '';
   }
 
-  // ---------- 이벤트 ----------
-  $('btnStart').addEventListener('click', async () => {
-    errorMsg.classList.remove('show');
+  function addTheme() {
+    const name  = $('newThemeName').value.trim();
+    const label = $('newThemeLabel').value.trim() || 'Photo Booth';
+    const bg    = $('newThemeBg').value;
+    const ink   = $('newThemeInk').value;
+    const pop   = $('newThemePop').value;
+    const decor = $('newThemeDecor').value;
+
+    if (!name) { alert('테마 이름을 입력해주세요.'); return; }
+
+    const theme = { id: 'c_' + Date.now().toString(36), name, label, bg, ink, pop };
+
+    if (['dots','stripes','checker','grid','hearts'].includes(decor)) {
+      const color = $('newPatternColor').value;
+      const opacity = parseFloat($('newPatternOpacity').value);
+      const defaults = {
+        dots:    { size: 10, spacing: 42 },
+        stripes: { size: 24, spacing: 48, angle: 45 },
+        checker: { size: 32 },
+        grid:    { size: 40, lineWidth: 1 },
+        hearts:  { size: 14, spacing: 56 },
+      };
+      theme.pattern = { type: decor, color, opacity, ...defaults[decor] };
+    } else if (decor === 'image') {
+      const url = $('newImageUrl').value.trim();
+      if (!url) { alert('이미지 URL을 입력해주세요.'); return; }
+      theme.backgroundImage = {
+        url, fit: 'cover',
+        opacity: 1,
+        overlayColor: bg,
+        overlayOpacity: parseFloat($('newOverlayOpacity').value),
+      };
+    }
+
+    const arr = loadCustomThemes();
+    arr.push(theme);
+    saveCustomThemes(arr);
+
+    $('newThemeName').value = '';
+    $('newThemeLabel').value = '';
+    $('newImageUrl').value = '';
+
+    renderAdminLists();
+    alert('테마가 등록되었어요 ✓');
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // ============ 이벤트 ============
+  $('btnStart').addEventListener('click', () => {
+    chosenLayout = null;
+    $('btnLayoutNext').disabled = true;
+    renderLayouts();
+    showScreen('layout');
+  });
+
+  $('btnLayoutNext').addEventListener('click', async () => {
+    if (!chosenLayout) return;
+    showScreen('getready');
+    await runGetReady();
     showScreen('camera');
     const ok = await startCamera();
     if (!ok) { showScreen('intro'); return; }
-    // 카메라 준비 후 자동 촬영 시작
-    setTimeout(() => shootSequence(), 600);
+    setTimeout(() => shootSequence(), 400);
   });
 
-  $('btnClose').addEventListener('click', () => {
-    if (shooting) {
-      // 중단
-      shooting = false;
-    }
-    stopCamera();
-    showScreen('intro');
-  });
+  $('btnClose').addEventListener('click', () => { shooting = false; stopCamera(); showScreen('intro'); });
+  $('btnMake').addEventListener('click', () => goToTheme());
 
-  $('btnMake').addEventListener('click', () => buildGrid());
+  $('btnFinish').addEventListener('click', async () => {
+    const data = await buildGrid(chosenTheme);
+    if (!data) return;
+    finalDataUrl = data;
+    $('resultImg').src = data;
+    showScreen('result');
+  });
 
   $('btnRetry').addEventListener('click', () => {
-    photos = [];
-    selected.clear();
-    finalDataUrl = null;
+    photos = []; selected.clear(); finalDataUrl = null;
+    chosenLayout = null; chosenTheme = null;
     showScreen('intro');
   });
 
   $('btnDownload').addEventListener('click', () => {
     if (!finalDataUrl) return;
     const a = document.createElement('a');
-    const ts = Date.now();
     a.href = finalDataUrl;
-    a.download = `photobooth_${ts}.jpg`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    a.download = `photobooth_${Date.now()}.jpg`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
   });
 
-  // iOS 백그라운드 복귀 시 스트림 정리
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden && stream) {
-      stopCamera();
-    }
+  document.querySelectorAll('.back').forEach(b => {
+    b.addEventListener('click', () => showScreen(b.dataset.back));
   });
 
-  // 진입 전 HTTPS 체크
+  $('adminLink').addEventListener('click', goToAdmin);
+  $('btnAddTheme').addEventListener('click', addTheme);
+  $('newThemeDecor').addEventListener('change', updateDecorOptions);
+  $('newPatternOpacity').addEventListener('input', (e) => { $('newPatternOpacityLbl').textContent = parseFloat(e.target.value).toFixed(2); });
+  $('newOverlayOpacity').addEventListener('input', (e) => { $('newOverlayOpacityLbl').textContent = parseFloat(e.target.value).toFixed(2); });
+
+  if (new URLSearchParams(location.search).get('admin') === '1') goToAdmin();
+
+  document.addEventListener('visibilitychange', () => { if (document.hidden && stream) stopCamera(); });
+
   if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
     showError('⚠️ 카메라는 HTTPS 또는 localhost 환경에서만 동작합니다. 배포 시 HTTPS로 서빙해주세요.');
   }
+
+  // themes.json 로드 (실패해도 앱은 그대로 동작)
+  loadJsonThemes();
 
 })();
 </script>

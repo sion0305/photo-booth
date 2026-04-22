@@ -1,0 +1,142 @@
+{
+  "version": 2,
+  "updatedAt": "2026-04-22",
+  "themes": [
+    {
+      "id": "polka_pink",
+      "name": "Polka Pink",
+      "label": "Cute & Sweet",
+      "bg": "#FCD5CE",
+      "ink": "#4A2C2A",
+      "pop": "#E85D75",
+      "pattern": {
+        "type": "dots",
+        "color": "#E85D75",
+        "size": 10,
+        "spacing": 44,
+        "opacity": 0.35
+      }
+    },
+    {
+      "id": "polka_navy",
+      "name": "Navy Dots",
+      "label": "Classic Mood",
+      "bg": "#1B2838",
+      "ink": "#FEFAF0",
+      "pop": "#FFD34E",
+      "pattern": {
+        "type": "dots",
+        "color": "#FFFFFF",
+        "size": 6,
+        "spacing": 32,
+        "opacity": 0.15
+      }
+    },
+    {
+      "id": "stripes_cream",
+      "name": "Cream Stripes",
+      "label": "Vintage Cafe",
+      "bg": "#F4E4C1",
+      "ink": "#5C4033",
+      "pop": "#D4A574",
+      "pattern": {
+        "type": "stripes",
+        "color": "#D4A574",
+        "size": 24,
+        "spacing": 48,
+        "opacity": 0.25,
+        "angle": 45
+      }
+    },
+    {
+      "id": "checker_black",
+      "name": "Checker Mono",
+      "label": "Race Day",
+      "bg": "#FFFFFF",
+      "ink": "#111111",
+      "pop": "#FF2E2E",
+      "pattern": {
+        "type": "checker",
+        "color": "#111111",
+        "size": 32,
+        "opacity": 0.08
+      }
+    },
+    {
+      "id": "grid_blueprint",
+      "name": "Blueprint",
+      "label": "Draft Mode",
+      "bg": "#0F3A5F",
+      "ink": "#E8F4FD",
+      "pop": "#FFC857",
+      "pattern": {
+        "type": "grid",
+        "color": "#FFFFFF",
+        "size": 40,
+        "lineWidth": 1,
+        "opacity": 0.2
+      }
+    },
+    {
+      "id": "hearts_red",
+      "name": "Hearts",
+      "label": "With Love",
+      "bg": "#FFF0F3",
+      "ink": "#8B2A43",
+      "pop": "#E85D75",
+      "pattern": {
+        "type": "hearts",
+        "color": "#E85D75",
+        "size": 14,
+        "spacing": 56,
+        "opacity": 0.4
+      }
+    },
+
+    {
+      "id": "bg_flowers",
+      "name": "Wild Flowers",
+      "label": "In Full Bloom",
+      "bg": "#F5E6D3",
+      "ink": "#3A2818",
+      "pop": "#C65D4B",
+      "backgroundImage": {
+        "url": "./backgrounds/flowers.jpg",
+        "fit": "cover",
+        "opacity": 0.55,
+        "overlayColor": "#F5E6D3",
+        "overlayOpacity": 0.25
+      }
+    },
+    {
+      "id": "bg_forest",
+      "name": "Forest Path",
+      "label": "Into the Woods",
+      "bg": "#1F2E22",
+      "ink": "#F3EEE5",
+      "pop": "#E8B059",
+      "backgroundImage": {
+        "url": "./backgrounds/forest.jpg",
+        "fit": "cover",
+        "opacity": 0.7,
+        "overlayColor": "#000000",
+        "overlayOpacity": 0.35
+      }
+    },
+    {
+      "id": "bg_dreamy",
+      "name": "Dreamy Cloud",
+      "label": "Daydreamer",
+      "bg": "#D4C5F9",
+      "ink": "#2D1B4E",
+      "pop": "#FF6B9D",
+      "backgroundImage": {
+        "url": "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800&q=80",
+        "fit": "cover",
+        "opacity": 0.8,
+        "overlayColor": "#D4C5F9",
+        "overlayOpacity": 0.2
+      }
+    }
+  ]
+}

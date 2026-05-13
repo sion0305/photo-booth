@@ -253,6 +253,24 @@
     border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,.15);
     background: #eee;
   }
+  .label-input-wrap {
+    flex: 0 0 auto;
+    padding: 4px 22px 8px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .label-input-lbl {
+    font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; text-align: center;
+  }
+  .label-input {
+    width: 100%; padding: 12px 16px;
+    border: 1.5px solid var(--line); border-radius: 12px;
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 600;
+    font-size: 16px; text-align: center;
+    background: #fff; color: var(--ink);
+  }
+  .label-input:focus { outline: none; border-color: var(--pop); }
+  .label-input::placeholder { font-style: italic; color: var(--muted); opacity: .8; }
   .theme__list {
     padding: 12px 22px 120px; display: flex; gap: 10px;
     overflow-x: auto; overflow-y: hidden; flex: 1;
@@ -320,6 +338,173 @@
   .hidden-canvas { display: none; }
   .error-msg { margin-top: 20px; padding: 14px; background: #fff; border: 1.5px solid var(--line); border-radius: 12px; font-size: 13px; color: var(--ink); line-height: 1.5; display: none; }
   .error-msg.show { display: block; }
+
+  /* ============================================ */
+  /*       Tablet & iPad (≥ 768px)                */
+  /* ============================================ */
+  @media (min-width: 768px) {
+    body { font-size: 17px; }
+    .app { max-width: 720px; }
+
+    /* Intro */
+    .intro { padding: 40px 40px 48px; }
+    .intro__title { font-size: clamp(80px, 14vw, 140px); margin-top: 6vh; }
+    .intro__lead { font-size: 17px; max-width: 38ch; margin-top: 32px; }
+    .steps { gap: 14px; margin-top: 36px; }
+    .step { padding: 18px 22px; gap: 18px; grid-template-columns: 36px 1fr auto; }
+    .step__n { font-size: 28px; }
+    .step__t { font-size: 16px; }
+    .step__m { font-size: 13px; }
+    .cta { padding: 26px 28px; font-size: 19px; margin-top: 36px; border-radius: 22px; }
+    .cta__arrow { width: 42px; height: 42px; font-size: 20px; }
+    .admin-link { font-size: 13px; margin-top: 18px; }
+
+    /* Sections */
+    .section-title { font-size: 56px; margin-top: 28px; }
+    .section-sub { font-size: 16px; margin-top: 14px; max-width: 52ch; line-height: 1.55; }
+    .topbar { padding: 26px 32px 0; }
+    .back { width: 42px; height: 42px; font-size: 24px; }
+    .badge { font-size: 13px; padding: 7px 12px; }
+
+    /* Buttons */
+    .btn { padding: 24px; font-size: 18px; border-radius: 20px; }
+
+    /* Layout select - 3 columns */
+    .layout__head { padding: 0 32px; }
+    .layout__list { grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 32px; }
+    .layout-card { padding: 24px 18px 18px; border-radius: 18px; gap: 16px; }
+    .lc-preview { width: 100px; padding: 8px; gap: 6px; }
+    .lc-name { font-size: 17px; }
+    .lc-meta { font-size: 12px; }
+    .layout__footer { padding: 0 32px; }
+
+    /* Get ready */
+    .getready__label { font-size: 15px; margin-bottom: 22px; }
+    .getready__num { font-size: 320px; }
+    .getready__msg { font-size: 18px; margin-top: 32px; }
+
+    /* Camera */
+    .countdown { font-size: 320px; }
+    .nicemsg { font-size: 96px; }
+    .cam-hud { padding: 24px 28px; }
+    .cam-hud__counter { font-size: 30px; padding: 8px 16px; }
+    .cam-close { width: 48px; height: 48px; font-size: 22px; }
+    .thumbstrip { bottom: 32px; padding: 0 32px; gap: 8px; }
+    .tick { height: 6px; max-width: 44px; }
+
+    /* Select - 3 columns (6컷 기준 2줄로 깔끔) */
+    .select__head { padding: 0 32px; }
+    .grid { grid-template-columns: repeat(3, 1fr); padding: 28px 32px 140px; gap: 12px; }
+    .thumb { border-radius: 12px; }
+    .thumb__badge { width: 34px; height: 34px; font-size: 16px; top: 10px; right: 10px; }
+    .floating-footer { padding: 20px 32px 28px; }
+    .floating-footer__count { font-size: 14px; margin-bottom: 14px; }
+    .floating-footer__count strong { font-size: 18px; }
+
+    /* Theme */
+    .theme__preview-wrap { padding: 24px 32px 16px; }
+    #themePreview { max-width: 280px; max-height: 42vh; }
+    .label-input-wrap { padding: 8px 32px 12px; }
+    .label-input-lbl { font-size: 11px; }
+    .label-input { padding: 14px 18px; font-size: 18px; }
+    .theme__list { padding: 16px 32px 140px; gap: 14px; }
+    .theme-card { flex: 0 0 160px; padding: 18px 14px; border-radius: 16px; }
+    .tc-cell { width: 22px; height: 28px; }
+    .tc-lbl { font-size: 12px; }
+    .tc-name { font-size: 14px; }
+    .tc-src { font-size: 11px; }
+
+    /* Result */
+    .result { padding: 28px 32px 28px; }
+    .result__title { font-size: 36px; }
+    #resultImg { max-height: 58dvh; }
+    .result__actions { gap: 14px; }
+
+    /* Admin */
+    .admin-inner { padding: 0 32px 32px; }
+    .admin__card { padding: 22px; border-radius: 18px; margin-top: 20px; }
+    .admin__card-title { font-size: 20px; }
+    .field input[type="text"], .field select { padding: 14px 16px; font-size: 16px; }
+    .color-field input[type="color"] { height: 52px; }
+    .color-field label { font-size: 12px; }
+    .admin-item { padding: 14px; }
+    .admin-item__swatch { width: 56px; height: 56px; }
+  }
+
+  /* ============================================ */
+  /*       iPad Pro 12.9" (≥ 1024px)              */
+  /* ============================================ */
+  @media (min-width: 1024px) {
+    .app { max-width: 880px; }
+
+    .intro { padding: 56px 56px 60px; }
+    .intro__title { font-size: clamp(110px, 13vw, 180px); }
+    .intro__lead { font-size: 19px; margin-top: 36px; max-width: 42ch; }
+    .steps { margin-top: 44px; gap: 16px; }
+    .step { padding: 22px 26px; grid-template-columns: 40px 1fr auto; gap: 22px; }
+    .step__n { font-size: 32px; }
+    .step__t { font-size: 17px; }
+    .step__m { font-size: 14px; }
+    .cta { padding: 30px 32px; font-size: 21px; margin-top: 44px; }
+    .cta__arrow { width: 48px; height: 48px; font-size: 22px; }
+
+    .section-title { font-size: 68px; margin-top: 32px; }
+    .section-sub { font-size: 17px; max-width: 56ch; }
+    .topbar { padding: 32px 40px 0; }
+
+    .btn { padding: 28px; font-size: 19px; border-radius: 22px; }
+
+    /* Layout */
+    .layout__head { padding: 0 40px; }
+    .layout__list { padding: 40px; gap: 20px; }
+    .layout-card { padding: 28px 20px 20px; border-radius: 20px; gap: 18px; }
+    .lc-preview { width: 120px; }
+    .lc-name { font-size: 19px; }
+    .layout__footer { padding: 0 40px; }
+
+    /* Get ready / Camera */
+    .getready__num, .countdown { font-size: 380px; }
+    .nicemsg { font-size: 110px; }
+
+    /* Select */
+    .select__head { padding: 0 40px; }
+    .grid { padding: 32px 40px 160px; gap: 14px; }
+    .floating-footer { padding: 22px 40px 32px; }
+
+    /* Theme */
+    .theme__preview-wrap { padding: 28px 40px 18px; }
+    #themePreview { max-width: 340px; max-height: 48vh; }
+    .label-input-wrap { padding: 10px 40px 14px; }
+    .label-input { padding: 16px 20px; font-size: 19px; }
+    .theme__list { padding: 20px 40px 160px; gap: 16px; }
+    .theme-card { flex: 0 0 180px; padding: 20px 16px; }
+    .tc-cell { width: 26px; height: 32px; }
+    .tc-name { font-size: 15px; }
+
+    /* Result */
+    .result { padding: 32px 40px; }
+    .result__title { font-size: 40px; }
+    #resultImg { max-height: 60dvh; }
+
+    /* Admin */
+    .admin-inner { padding: 0 40px 36px; }
+    .admin__card { padding: 26px; }
+    .admin__card-title { font-size: 22px; }
+  }
+
+  /* ============================================ */
+  /*  Landscape on tablets: 컨트롤 사이즈 약간 보정   */
+  /* ============================================ */
+  @media (min-width: 1024px) and (orientation: landscape) and (max-height: 900px) {
+    .intro__title { font-size: clamp(80px, 9vh, 130px); margin-top: 4vh; }
+    .section-title { font-size: 48px; margin-top: 18px; }
+    .getready__num, .countdown { font-size: 280px; }
+    #themePreview { max-height: 40vh; }
+    .intro { padding: 32px 56px 36px; }
+    .steps { margin-top: 22px; gap: 10px; }
+    .step { padding: 14px 22px; }
+    .cta { margin-top: 22px; padding: 22px 28px; }
+  }
 </style>
 </head>
 <body>
@@ -333,12 +518,6 @@
         <span class="mono" style="font-size:14px;">no.001</span>
       </div>
       <h1 class="intro__title">Photo<br><em>Booth</em></h1>
-      <p class="intro__lead">레이아웃을 고르고, 8컷을 촬영한 뒤 원하는 사진과 테마를 골라 완성하세요.</p>
-      <div class="steps">
-        <div class="step"><div class="step__n">1</div><div class="step__t">레이아웃 선택</div><div class="step__m">pick layout</div></div>
-        <div class="step"><div class="step__n">2</div><div class="step__t">8컷 촬영 · 8초 간격</div><div class="step__m">auto shoot</div></div>
-        <div class="step"><div class="step__n">3</div><div class="step__t">사진 고르고 테마 입히기</div><div class="step__m">curate</div></div>
-      </div>
       <div class="error-msg" id="errorMsg"></div>
       <a class="admin-link" id="adminLink">관리자 모드 · Admin</a>
     </div>
@@ -375,7 +554,7 @@
   <section class="screen camera" id="screenCamera">
     <div class="cam-hud">
       <button class="cam-close" id="btnClose">✕</button>
-      <div class="cam-hud__counter"><span id="shotIndex">1</span><em> / 8</em></div>
+      <div class="cam-hud__counter"><span id="shotIndex">1</span><em> / <span id="totalShots">6</span></em></div>
     </div>
     <div class="video-wrap"><video id="video" autoplay playsinline muted></video></div>
     <div class="countdown" id="countdown"></div>
@@ -412,6 +591,12 @@
     <div class="theme__preview-wrap">
       <img id="themePreview" alt="preview" />
     </div>
+
+    <div class="label-input-wrap">
+      <label class="label-input-lbl">사진에 들어갈 문구</label>
+      <input type="text" id="labelInput" maxlength="24" class="label-input" placeholder="" autocomplete="off" />
+    </div>
+
     <div class="theme__list" id="themeList"></div>
     <div class="floating-footer">
       <button class="btn btn-primary" id="btnFinish">SAVE PHOTO ↓</button>
@@ -516,27 +701,27 @@
 <script>
 (() => {
   // ============ 설정 ============
-  const TOTAL_SHOTS = 8;
+  const TOTAL_SHOTS = 6;
   const GET_READY_SECONDS = 5;
   const TIMER_SECONDS = 5;
   const SHOT_INTERVAL = 8;
   const REST_SECONDS = SHOT_INTERVAL - TIMER_SECONDS;
   const JSON_THEMES_URL = './themes.json'; // 서버에 배포된 파일
+  const DEFAULT_LABEL = '행신 임마누엘 교회 사랑의 바자회';
 
   const LAYOUTS = [
     { id: '2x2', name: 'Classic 2×2', cols: 2, rows: 2, picks: 4, desc: 'pick 4 shots' },
+    { id: '1x3', name: 'Wide 1×3',    cols: 3, rows: 1, picks: 3, desc: 'pick 3 shots' },
     { id: '4x1', name: 'Strip 4×1',   cols: 1, rows: 4, picks: 4, desc: 'pick 4 shots' },
-    { id: '2x3', name: 'Grid 2×3',    cols: 2, rows: 3, picks: 6, desc: 'pick 6 shots' },
-    { id: '3x2', name: 'Wide 3×2',    cols: 3, rows: 2, picks: 6, desc: 'pick 6 shots' },
   ];
 
   const BUILTIN_THEMES = [
-    { id: 'classic',  name: 'Classic Black', bg: '#111111', ink: '#F3EEE5', pop: '#FF5233', label: 'Photo Booth' },
-    { id: 'cream',    name: 'Cream Paper',   bg: '#F3EEE5', ink: '#1a1a1a', pop: '#FF5233', label: 'Memories'    },
-    { id: 'rose',     name: 'Rose Blossom',  bg: '#F4C4C9', ink: '#3B1F2B', pop: '#8B2A43', label: 'With Love'   },
-    { id: 'forest',   name: 'Forest Walk',   bg: '#2D4A3E', ink: '#F3EEE5', pop: '#E8B059', label: 'Into Woods'  },
-    { id: 'midnight', name: 'Midnight',      bg: '#0A1A2E', ink: '#E8EEF5', pop: '#64C8FF', label: 'Stargazers'  },
-    { id: 'sunset',   name: 'Sunset',        bg: '#F28C4F', ink: '#2B1810', pop: '#FFE8C8', label: 'Golden Hour' },
+    { id: 'classic',  name: 'Classic Black', bg: '#111111', ink: '#F3EEE5', pop: '#FF5233', label: DEFAULT_LABEL },
+    { id: 'cream',    name: 'Cream Paper',   bg: '#F3EEE5', ink: '#1a1a1a', pop: '#FF5233', label: DEFAULT_LABEL },
+    { id: 'rose',     name: 'Rose Blossom',  bg: '#F4C4C9', ink: '#3B1F2B', pop: '#8B2A43', label: DEFAULT_LABEL },
+    { id: 'forest',   name: 'Forest Walk',   bg: '#2D4A3E', ink: '#F3EEE5', pop: '#E8B059', label: DEFAULT_LABEL },
+    { id: 'midnight', name: 'Midnight',      bg: '#0A1A2E', ink: '#E8EEF5', pop: '#64C8FF', label: DEFAULT_LABEL },
+    { id: 'sunset',   name: 'Sunset',        bg: '#F28C4F', ink: '#2B1810', pop: '#FFE8C8', label: DEFAULT_LABEL },
   ];
 
   // ============ 상태 ============
@@ -547,6 +732,7 @@
   let finalDataUrl = null;
   let chosenLayout = null;
   let chosenTheme = null;
+  let customLabel = '';           // 사용자가 입력한 사진 라벨
   let jsonThemes = [];            // themes.json에서 로드된 테마
   const imageCache = new Map();   // url → Image (디코드된 이미지 캐시)
 
@@ -751,6 +937,9 @@
     renderThemeList();
     chosenTheme = allThemes()[0];
     highlightThemeCard(chosenTheme.id);
+    customLabel = '';
+    $('labelInput').value = '';
+    $('labelInput').placeholder = DEFAULT_LABEL;
     renderPreview();
     showScreen('theme');
   }
@@ -813,6 +1002,7 @@
       card.addEventListener('click', () => {
         chosenTheme = t;
         highlightThemeCard(t.id);
+        $('labelInput').placeholder = DEFAULT_LABEL;
         renderPreview();
       });
       list.appendChild(card);
@@ -1007,14 +1197,31 @@
     ctx.textBaseline = 'middle';
     const now = new Date();
     const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
+    const labelText = (customLabel && customLabel.trim()) ? customLabel.trim() : (theme.label || DEFAULT_LABEL);
 
+    // 날짜 폰트 측정 (라벨이 들어갈 가용 너비 계산용)
+    const dateFontSize = Math.min(32, Math.max(22, W/30));
+    ctx.font = `500 ${dateFontSize}px Pretendard, sans-serif`;
+    const dateWidth = ctx.measureText(dateStr).width;
+    const maxLabelWidth = W - PAD * 2 - dateWidth - 32;
+
+    // 한글 포함 여부에 따라 폰트 변경, 길이에 따라 자동 축소
+    const hasKorean = /[\u3131-\uD79D\uAC00-\uD7A3]/.test(labelText);
+    const labelFamily = hasKorean ? 'Pretendard, sans-serif' : 'Fraunces, serif';
+    const labelWeight = hasKorean ? '700' : 'italic 600';
+    let labelSize = Math.min(48, Math.max(32, W/22));
+    ctx.font = `${labelWeight} ${labelSize}px ${labelFamily}`;
+    while (ctx.measureText(labelText).width > maxLabelWidth && labelSize > 16) {
+      labelSize -= 1;
+      ctx.font = `${labelWeight} ${labelSize}px ${labelFamily}`;
+    }
     ctx.fillStyle = theme.ink;
-    ctx.font = `italic 600 ${Math.min(48, Math.max(32, W/22))}px Fraunces, serif`;
     ctx.textAlign = 'left';
-    ctx.fillText(theme.label || 'Photo Booth', PAD, H - FOOTER/2);
+    ctx.fillText(labelText, PAD, H - FOOTER/2);
 
+    // 날짜
     ctx.fillStyle = theme.pop;
-    ctx.font = `500 ${Math.min(32, Math.max(22, W/30))}px Pretendard, sans-serif`;
+    ctx.font = `500 ${dateFontSize}px Pretendard, sans-serif`;
     ctx.textAlign = 'right';
     ctx.fillText(dateStr, W - PAD, H - FOOTER/2);
 
@@ -1178,8 +1385,16 @@
 
   $('btnRetry').addEventListener('click', () => {
     photos = []; selected.clear(); finalDataUrl = null;
-    chosenLayout = null; chosenTheme = null;
+    chosenLayout = null; chosenTheme = null; customLabel = '';
     showScreen('intro');
+  });
+
+  // 라벨 실시간 입력 (디바운스로 미리보기 부담 감소)
+  let labelDebounce = null;
+  $('labelInput').addEventListener('input', (e) => {
+    customLabel = e.target.value;
+    clearTimeout(labelDebounce);
+    labelDebounce = setTimeout(renderPreview, 200);
   });
 
   $('btnDownload').addEventListener('click', () => {
@@ -1210,6 +1425,9 @@
 
   // themes.json 로드 (실패해도 앱은 그대로 동작)
   loadJsonThemes();
+
+  // 카메라 카운터 총 컷 수 동기화
+  $('totalShots').textContent = TOTAL_SHOTS;
 
 })();
 </script>

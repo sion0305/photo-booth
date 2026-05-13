@@ -235,7 +235,7 @@
   /* SELECT */
   .select { padding: 0 0 24px; }
   .select__head { padding: 0 22px; display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px; }
-  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; flex: 1; overflow-y: auto; padding: 20px 18px 120px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; flex: 1; overflow-y: auto; padding: 16px 14px 110px; }
   .thumb {
     position: relative; aspect-ratio: 3/4;
     border-radius: 10px; overflow: hidden; cursor: pointer;
@@ -580,7 +580,6 @@
     </div>
     <div class="video-wrap"><video id="video" autoplay playsinline muted></video></div>
     <div class="countdown" id="countdown"></div>
-    <div class="nicemsg" id="niceMsg">Nice!</div>
     <div class="flash" id="flash"></div>
     <div class="thumbstrip" id="ticks"></div>
   </section>
@@ -923,7 +922,7 @@
     for (let i = 0; i < TOTAL_SHOTS; i++) {
       if (!shooting) return;
       $('shotIndex').textContent = (i + 1);
-      if (i > 0) { showNice(); await wait(REST_SECONDS); if (!shooting) return; }
+      if (i > 0) { await wait(REST_SECONDS); if (!shooting) return; }
       await runCountdown(); if (!shooting) return;
       flashOnce();
       const data = captureFrame();
@@ -1033,7 +1032,7 @@
           <div class="tc-cell-row"><div class="tc-cell"></div><div class="tc-cell"></div></div>
           <div class="tc-cell-row"><div class="tc-cell"></div><div class="tc-cell"></div></div>
           <div class="tc-accent" style="background:${t.pop};"></div>
-          <div class="tc-lbl">${escapeHtml(t.label || '')}</div>
+          <div class="tc-lbl">${escapeHtml((customLabel && customLabel.trim()) || DEFAULT_LABEL)}</div>
         </div>
         <div class="tc-info">
           <div class="tc-name">${escapeHtml(t.name)}</div>
@@ -1267,7 +1266,7 @@
     ctx.textBaseline = 'middle';
     const now = new Date();
     const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
-    const labelText = (customLabel && customLabel.trim()) ? customLabel.trim() : (theme.label || DEFAULT_LABEL);
+    const labelText = (customLabel && customLabel.trim()) ? customLabel.trim() : DEFAULT_LABEL;
 
     // 날짜 폰트 측정 (라벨이 들어갈 가용 너비 계산용)
     const dateFontSize = Math.min(32, Math.max(22, W/30));
@@ -1463,6 +1462,9 @@
   let labelDebounce = null;
   $('labelInput').addEventListener('input', (e) => {
     customLabel = e.target.value;
+    // 테마 카드의 미리보기 라벨도 즉시 동기화
+    const displayLabel = (customLabel && customLabel.trim()) ? customLabel.trim() : DEFAULT_LABEL;
+    document.querySelectorAll('.tc-lbl').forEach(el => { el.textContent = displayLabel; });
     clearTimeout(labelDebounce);
     labelDebounce = setTimeout(renderPreview, 200);
   });

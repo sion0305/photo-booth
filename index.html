@@ -131,11 +131,27 @@
   .layout-card.selected .lc-name { color: var(--bg); }
   .layout-card.selected .lc-meta { color: rgba(243,238,229,.6); }
   .lc-preview {
-    display: grid; gap: 4px;
-    width: 80px; aspect-ratio: 3/4;
-    padding: 6px; border: 1px dashed currentColor; border-radius: 6px; opacity: .9;
+    display: grid;
+    gap: 3px;
+    padding: 5px;
+    border: 1px dashed currentColor;
+    border-radius: 6px;
+    opacity: .9;
   }
-  .lc-cell { background: var(--ink); border-radius: 2px; aspect-ratio: 3/4; }
+  .lc-preview.portrait  { width: 72px; height: 108px; }      /* 4:6 */
+  .lc-preview.landscape { width: 108px; height: 72px; }      /* 6:4 */
+  .lc-preview.split-h   { grid-template-columns: 1fr 1fr; }  /* 두 세트 좌우 */
+  .lc-preview.split-v   { grid-template-rows: 1fr 1fr; }     /* 두 세트 상하 */
+  .lc-grid {
+    display: grid;
+    gap: 2px;
+    width: 100%;
+    height: 100%;
+  }
+  .lc-grid--2x2   { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+  .lc-grid--strip { grid-template-columns: 1fr; grid-template-rows: repeat(4, 1fr); }
+  .lc-grid--row   { grid-template-columns: repeat(3, 1fr); grid-template-rows: 1fr; }
+  .lc-cell { background: currentColor; border-radius: 1px; opacity: .9; }
   .lc-info { text-align: center; }
   .lc-name { font-family: 'Fraunces', serif; font-weight: 600; font-size: 15px; line-height: 1.2; }
   .lc-meta { font-size: 11px; color: var(--muted); margin-top: 2px; letter-spacing: .08em; text-transform: uppercase; }
@@ -373,7 +389,8 @@
     .layout__head { padding: 0 32px; }
     .layout__list { grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 32px; }
     .layout-card { padding: 24px 18px 18px; border-radius: 18px; gap: 16px; }
-    .lc-preview { width: 100px; padding: 8px; gap: 6px; }
+    .lc-preview.portrait  { width: 88px;  height: 132px; padding: 6px; gap: 3px; }
+    .lc-preview.landscape { width: 132px; height: 88px;  padding: 6px; gap: 3px; }
     .lc-name { font-size: 17px; }
     .lc-meta { font-size: 12px; }
     .layout__footer { padding: 0 32px; }
@@ -458,7 +475,8 @@
     .layout__head { padding: 0 40px; }
     .layout__list { padding: 40px; gap: 20px; }
     .layout-card { padding: 28px 20px 20px; border-radius: 20px; gap: 18px; }
-    .lc-preview { width: 120px; }
+    .lc-preview.portrait  { width: 100px; height: 150px; padding: 7px; }
+    .lc-preview.landscape { width: 150px; height: 100px; padding: 7px; }
     .lc-name { font-size: 19px; }
     .layout__footer { padding: 0 40px; }
 
@@ -710,9 +728,9 @@
   const DEFAULT_LABEL = '행신 임마누엘 교회 사랑의 바자회';
 
   const LAYOUTS = [
-    { id: '2x2', name: 'Classic 2×2', cols: 2, rows: 2, picks: 4, desc: 'pick 4 shots' },
-    { id: '1x3', name: 'Wide 1×3',    cols: 3, rows: 1, picks: 3, desc: 'pick 3 shots' },
-    { id: '4x1', name: 'Strip 4×1',   cols: 1, rows: 4, picks: 4, desc: 'pick 4 shots' },
+    { id: '2x2', name: 'Classic 2×2', picks: 4, desc: '4 shots',          orientation: 'portrait',  duplicate: false },
+    { id: '4x1', name: 'Strip 4×1',   picks: 4, desc: '4 shots × 2 sets', orientation: 'portrait',  duplicate: true  },
+    { id: '1x3', name: 'Wide 1×3',    picks: 3, desc: '3 shots × 2 sets', orientation: 'landscape', duplicate: true  },
   ];
 
   const BUILTIN_THEMES = [
@@ -786,6 +804,32 @@
   }
 
   // ============ 레이아웃 카드 ============
+  // 레이아웃 카드 프리뷰 HTML 생성
+  function buildLayoutPreview(lo) {
+    if (lo.id === '2x2') {
+      return `<div class="lc-preview portrait">
+        <div class="lc-grid lc-grid--2x2">
+          <div class="lc-cell"></div><div class="lc-cell"></div>
+          <div class="lc-cell"></div><div class="lc-cell"></div>
+        </div>
+      </div>`;
+    }
+    if (lo.id === '4x1') {
+      const strip = `<div class="lc-grid lc-grid--strip">
+        <div class="lc-cell"></div><div class="lc-cell"></div>
+        <div class="lc-cell"></div><div class="lc-cell"></div>
+      </div>`;
+      return `<div class="lc-preview portrait split-h">${strip}${strip}</div>`;
+    }
+    if (lo.id === '1x3') {
+      const row = `<div class="lc-grid lc-grid--row">
+        <div class="lc-cell"></div><div class="lc-cell"></div><div class="lc-cell"></div>
+      </div>`;
+      return `<div class="lc-preview landscape split-v">${row}${row}</div>`;
+    }
+    return '';
+  }
+
   function renderLayouts() {
     const list = $('layoutList');
     list.innerHTML = '';
@@ -793,10 +837,7 @@
       const card = document.createElement('div');
       card.className = 'layout-card';
       card.dataset.id = lo.id;
-      let preview = `<div class="lc-preview" style="grid-template-columns: repeat(${lo.cols}, 1fr); grid-template-rows: repeat(${lo.rows}, 1fr);">`;
-      for (let i = 0; i < lo.cols * lo.rows; i++) preview += '<div class="lc-cell"></div>';
-      preview += '</div>';
-      card.innerHTML = `${preview}<div class="lc-info"><div class="lc-name">${lo.name}</div><div class="lc-meta">${lo.desc}</div></div>`;
+      card.innerHTML = `${buildLayoutPreview(lo)}<div class="lc-info"><div class="lc-name">${lo.name}</div><div class="lc-meta">${lo.desc}</div></div>`;
       card.addEventListener('click', () => {
         document.querySelectorAll('.layout-card').forEach(c => c.classList.remove('selected'));
         card.classList.add('selected');
@@ -1155,10 +1196,14 @@
     const order = [...selected];
     if (order.length !== chosenLayout.picks) return null;
 
-    const CELL_W = 600, CELL_H = 800;
-    const GAP = 16, PAD = 40, FOOTER = 110;
-    const W = PAD * 2 + CELL_W * chosenLayout.cols + GAP * (chosenLayout.cols - 1);
-    const H = PAD + CELL_H * chosenLayout.rows + GAP * (chosenLayout.rows - 1) + FOOTER;
+    // 4×6 인치 @ 300dpi = 1200 × 1800 (portrait) / 1800 × 1200 (landscape)
+    const isLandscape = chosenLayout.orientation === 'landscape';
+    const W = isLandscape ? 1800 : 1200;
+    const H = isLandscape ? 1200 : 1800;
+    const PAD = 50;          // 외곽 여백
+    const GAP = 12;          // 셀 간 간격
+    const SPLIT_GAP = 32;    // 두 세트 사이 간격 (가위 자르는 선)
+    const FOOTER = 100;      // 하단 라벨 영역
 
     const gridCanvas = $('gridCanvas');
     gridCanvas.width = W;
@@ -1176,22 +1221,47 @@
       drawPattern(ctx, W, H, theme.pattern);
     }
 
-    // 3) 사진들
-    const positions = [];
-    for (let r = 0; r < chosenLayout.rows; r++) {
-      for (let c = 0; c < chosenLayout.cols; c++) {
-        positions.push([ PAD + c * (CELL_W + GAP), PAD + r * (CELL_H + GAP) ]);
-      }
-    }
+    // 3) 사진 로드
     const imgs = await Promise.all(order.map(idx => new Promise(res => {
       const img = new Image();
       img.onload = () => res(img);
       img.src = photos[idx];
     })));
-    imgs.forEach((img, i) => {
-      const [x, y] = positions[i];
-      drawCover(ctx, img, x, y, CELL_W, CELL_H);
-    });
+
+    // 4) 레이아웃별 배치
+    if (chosenLayout.id === '2x2') {
+      // 단일 2×2 그리드
+      const cellW = (W - PAD * 2 - GAP) / 2;
+      const cellH = (H - PAD - GAP - FOOTER) / 2;
+      for (let r = 0; r < 2; r++) {
+        for (let c = 0; c < 2; c++) {
+          const idx = r * 2 + c;
+          drawCover(ctx, imgs[idx], PAD + c * (cellW + GAP), PAD + r * (cellH + GAP), cellW, cellH);
+        }
+      }
+    } else if (chosenLayout.id === '4x1') {
+      // 같은 4컷 세로 스트립을 좌·우 두 세트
+      const stripW = (W - PAD * 2 - SPLIT_GAP) / 2;
+      const cellH = (H - PAD - GAP * 3 - FOOTER) / 4;
+      const drawStrip = (offsetX) => {
+        for (let r = 0; r < 4; r++) {
+          drawCover(ctx, imgs[r], offsetX, PAD + r * (cellH + GAP), stripW, cellH);
+        }
+      };
+      drawStrip(PAD);
+      drawStrip(PAD + stripW + SPLIT_GAP);
+    } else if (chosenLayout.id === '1x3') {
+      // 같은 3컷 가로줄을 상·하 두 세트
+      const cellW = (W - PAD * 2 - GAP * 2) / 3;
+      const stripH = (H - PAD - SPLIT_GAP - FOOTER) / 2;
+      const drawRow = (offsetY) => {
+        for (let c = 0; c < 3; c++) {
+          drawCover(ctx, imgs[c], PAD + c * (cellW + GAP), offsetY, cellW, stripH);
+        }
+      };
+      drawRow(PAD);
+      drawRow(PAD + stripH + SPLIT_GAP);
+    }
 
     // 4) 라벨 + 날짜
     ctx.textBaseline = 'middle';

@@ -122,7 +122,7 @@
   .layout-card {
     background: var(--card); border: 1.5px solid var(--line);
     border-radius: 16px; padding: 18px 14px 14px; cursor: pointer;
-    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
     transition: transform .15s ease, background .2s;
   }
   .layout-card:active { transform: scale(0.97); }
@@ -138,19 +138,21 @@
     border-radius: 6px;
     opacity: .9;
   }
-  .lc-preview.portrait  { width: 72px; height: 108px; }      /* 4:6 */
-  .lc-preview.landscape { width: 108px; height: 72px; }      /* 6:4 */
-  .lc-preview.split-h   { grid-template-columns: 1fr 1fr; }  /* 두 세트 좌우 */
-  .lc-preview.split-v   { grid-template-rows: 1fr 1fr; }     /* 두 세트 상하 */
-  .lc-grid {
-    display: grid;
-    gap: 2px;
-    width: 100%;
-    height: 100%;
+  .lc-preview.lp-2x2 {
+    width: 90px; height: 90px;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
   }
-  .lc-grid--2x2   { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
-  .lc-grid--strip { grid-template-columns: 1fr; grid-template-rows: repeat(4, 1fr); }
-  .lc-grid--row   { grid-template-columns: repeat(3, 1fr); grid-template-rows: 1fr; }
+  .lc-preview.lp-4x1 {
+    width: 36px; height: 132px;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, 1fr);
+  }
+  .lc-preview.lp-1x3 {
+    width: 132px; height: 44px;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 1fr;
+  }
   .lc-cell { background: currentColor; border-radius: 1px; opacity: .9; }
   .lc-info { text-align: center; }
   .lc-name { font-family: 'Fraunces', serif; font-weight: 600; font-size: 15px; line-height: 1.2; }
@@ -388,9 +390,10 @@
     /* Layout select - 3 columns */
     .layout__head { padding: 0 32px; }
     .layout__list { grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 32px; }
-    .layout-card { padding: 24px 18px 18px; border-radius: 18px; gap: 16px; }
-    .lc-preview.portrait  { width: 88px;  height: 132px; padding: 6px; gap: 3px; }
-    .lc-preview.landscape { width: 132px; height: 88px;  padding: 6px; gap: 3px; }
+    .layout-card { padding: 24px 18px 18px; border-radius: 18px; gap: 18px; }
+    .lc-preview.lp-2x2 { width: 110px; height: 110px; padding: 6px; gap: 4px; }
+    .lc-preview.lp-4x1 { width: 44px;  height: 160px; padding: 6px; gap: 4px; }
+    .lc-preview.lp-1x3 { width: 160px; height: 54px;  padding: 6px; gap: 4px; }
     .lc-name { font-size: 17px; }
     .lc-meta { font-size: 12px; }
     .layout__footer { padding: 0 32px; }
@@ -474,9 +477,10 @@
     /* Layout */
     .layout__head { padding: 0 40px; }
     .layout__list { padding: 40px; gap: 20px; }
-    .layout-card { padding: 28px 20px 20px; border-radius: 20px; gap: 18px; }
-    .lc-preview.portrait  { width: 100px; height: 150px; padding: 7px; }
-    .lc-preview.landscape { width: 150px; height: 100px; padding: 7px; }
+    .layout-card { padding: 28px 20px 20px; border-radius: 20px; gap: 20px; }
+    .lc-preview.lp-2x2 { width: 130px; height: 130px; padding: 7px; }
+    .lc-preview.lp-4x1 { width: 52px;  height: 190px; padding: 7px; }
+    .lc-preview.lp-1x3 { width: 190px; height: 64px;  padding: 7px; }
     .lc-name { font-size: 19px; }
     .layout__footer { padding: 0 40px; }
 
@@ -804,28 +808,24 @@
   }
 
   // ============ 레이아웃 카드 ============
-  // 레이아웃 카드 프리뷰 HTML 생성
+  // 레이아웃 카드 프리뷰 (단일 그리드 — 실제 출력은 buildGrid에서 두 세트로 복제)
   function buildLayoutPreview(lo) {
     if (lo.id === '2x2') {
-      return `<div class="lc-preview portrait">
-        <div class="lc-grid lc-grid--2x2">
-          <div class="lc-cell"></div><div class="lc-cell"></div>
-          <div class="lc-cell"></div><div class="lc-cell"></div>
-        </div>
+      return `<div class="lc-preview lp-2x2">
+        <div class="lc-cell"></div><div class="lc-cell"></div>
+        <div class="lc-cell"></div><div class="lc-cell"></div>
       </div>`;
     }
     if (lo.id === '4x1') {
-      const strip = `<div class="lc-grid lc-grid--strip">
+      return `<div class="lc-preview lp-4x1">
         <div class="lc-cell"></div><div class="lc-cell"></div>
         <div class="lc-cell"></div><div class="lc-cell"></div>
       </div>`;
-      return `<div class="lc-preview portrait split-h">${strip}${strip}</div>`;
     }
     if (lo.id === '1x3') {
-      const row = `<div class="lc-grid lc-grid--row">
+      return `<div class="lc-preview lp-1x3">
         <div class="lc-cell"></div><div class="lc-cell"></div><div class="lc-cell"></div>
       </div>`;
-      return `<div class="lc-preview landscape split-v">${row}${row}</div>`;
     }
     return '';
   }

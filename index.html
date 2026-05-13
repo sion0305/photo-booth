@@ -198,7 +198,15 @@
     border: none; color: #fff; font-size: 20px; cursor: pointer;
   }
   .video-wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-  #video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+  .video-mask {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.6);
+    border: 2px solid rgba(255,255,255,0.18);
+    background: #111;
+  }
+  #video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: block; }
   .countdown {
     position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
     font-family: 'Fraunces', serif; font-weight: 300; font-style: italic;
@@ -578,7 +586,11 @@
       <button class="cam-close" id="btnClose">✕</button>
       <div class="cam-hud__counter"><span id="shotIndex">1</span><em> / <span id="totalShots">6</span></em></div>
     </div>
-    <div class="video-wrap"><video id="video" autoplay playsinline muted></video></div>
+    <div class="video-wrap">
+      <div class="video-mask" id="videoMask">
+        <video id="video" autoplay playsinline muted></video>
+      </div>
+    </div>
     <div class="countdown" id="countdown"></div>
     <div class="flash" id="flash"></div>
     <div class="thumbstrip" id="ticks"></div>
@@ -878,6 +890,29 @@
   function stopCamera() { if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; } }
   function showError(msg) { const e = $('errorMsg'); e.textContent = msg; e.classList.add('show'); }
 
+  // 레이아웃별 셀 비율 (최종 인쇄 시 각 사진 셀의 너비:높이)
+  // 이 비율로 카메라 미리보기를 마스킹해 사용자가 찍히는 영역을 정확히 보게 함
+  function getCellRatio(layout) {
+    if (!layout) return 2/3;
+    if (layout.id === '2x2') return 2/3;   // 인물 비율
+    if (layout.id === '4x1') return 4/3;   // 가로 풍경 (스트립 한 칸)
+    if (layout.id === '1x3') return 1/1;   // 정사각에 가까움
+    return 2/3;
+  }
+
+  function setupCameraMask(layout) {
+    const ratio = getCellRatio(layout);
+    const mask = $('videoMask');
+    const wrap = mask.parentElement;
+    const maxW = wrap.clientWidth * 0.92;
+    const maxH = wrap.clientHeight * 0.78;
+    let w, h;
+    if (maxW / ratio <= maxH) { w = maxW; h = maxW / ratio; }
+    else { h = maxH; w = maxH * ratio; }
+    mask.style.width = w + 'px';
+    mask.style.height = h + 'px';
+  }
+
   function renderTicks() {
     const ticksEl = $('ticks');
     ticksEl.innerHTML = '';
@@ -889,14 +924,27 @@
   }
 
   function captureFrame() {
-    const w = video.videoWidth, h = video.videoHeight;
+    const vw = video.videoWidth, vh = video.videoHeight;
+    // 셀 비율(layout cell ratio)에 맞춰 크롭
+    const ratio = getCellRatio(chosenLayout);
+    let sw, sh;
+    if (vw / vh > ratio) {
+      // 비디오가 셀보다 더 가로로 김 → 좌우 잘림
+      sh = vh; sw = sh * ratio;
+    } else {
+      sw = vw; sh = sw / ratio;
+    }
+    const sx = (vw - sw) / 2;
+    const sy = (vh - sh) / 2;
+
     const c = $('captureCanvas');
-    c.width = w; c.height = h;
-    const ctx = c.getContext('2d');
-    ctx.save();
-    ctx.translate(w, 0); ctx.scale(-1, 1);
-    ctx.drawImage(video, 0, 0, w, h);
-    ctx.restore();
+    c.width = Math.round(sw);
+    c.height = Math.round(sh);
+    const cctx = c.getContext('2d');
+    cctx.save();
+    cctx.translate(c.width, 0); cctx.scale(-1, 1); // 미러
+    cctx.drawImage(video, sx, sy, sw, sh, 0, 0, c.width, c.height);
+    cctx.restore();
     return c.toDataURL('image/jpeg', 0.92);
   }
 
@@ -1191,6 +1239,89 @@
     }
   }
 
+  // 텍스트 줄바꿈 (한글: 글자 단위, 영문: 단어 단위, 공백 우선)
+  function wrapTextLines(ctx, text, maxWidth, hasKorean) {
+    if (!text) return [];
+    if (hasKorean) {
+      const lines = [];
+      let cur = '';
+      for (const ch of text) {
+        const test = cur + ch;
+        if (ctx.measureText(test).width > maxWidth && cur) {
+          const spIdx = cur.lastIndexOf(' ');
+          if (spIdx > 0 && spIdx > cur.length / 2) {
+            lines.push(cur.slice(0, spIdx).trim());
+            cur = cur.slice(spIdx + 1) + ch;
+          } else {
+            lines.push(cur);
+            cur = ch;
+          }
+        } else cur = test;
+      }
+      if (cur) lines.push(cur);
+      return lines;
+    }
+    const words = text.split(/\s+/);
+    const lines = [];
+    let cur = '';
+    for (const w of words) {
+      const test = cur ? cur + ' ' + w : w;
+      if (ctx.measureText(test).width > maxWidth && cur) {
+        lines.push(cur);
+        cur = w;
+      } else cur = test;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+
+  // 영역(x, y, w, h)에 텍스트 그리기. 폰트 자동 축소 + 줄바꿈.
+  function drawTextInBox(ctx, text, x, y, w, h, opts = {}) {
+    const hasKorean = /[\u3131-\uD79D\uAC00-\uD7A3]/.test(text);
+    const isLabel = opts.role === 'label';
+    const weight = opts.weight || (isLabel ? (hasKorean ? '700' : '600') : '500');
+    const family = opts.family || (isLabel && !hasKorean ? 'Fraunces, serif' : 'Pretendard, sans-serif');
+    const italic = (isLabel && !hasKorean) ? 'italic ' : (opts.italic ? 'italic ' : '');
+
+    const maxSize = opts.maxSize ?? 36;
+    const minSize = opts.minSize ?? 10;
+    const maxLines = opts.maxLines ?? 2;
+    const lineHeight = opts.lineHeight ?? 1.22;
+    const padding = opts.padding ?? 6;
+    const align = opts.align ?? 'left';
+    const vAlign = opts.vAlign ?? 'middle';
+    const color = opts.color ?? '#000';
+
+    const innerW = w - padding * 2;
+    const innerH = h - padding * 2;
+
+    let size = maxSize, lines = [];
+    while (size >= minSize) {
+      ctx.font = `${italic}${weight} ${size}px ${family}`;
+      lines = wrapTextLines(ctx, text, innerW, hasKorean);
+      const totalH = lines.length * size * lineHeight;
+      if (lines.length <= maxLines && totalH <= innerH) break;
+      size -= 1;
+    }
+
+    ctx.fillStyle = color;
+    ctx.textBaseline = 'top';
+    const lineH = size * lineHeight;
+    const totalH = lines.length * lineH;
+
+    let startY;
+    if (vAlign === 'top') startY = y + padding;
+    else if (vAlign === 'bottom') startY = y + h - padding - totalH;
+    else startY = y + (h - totalH) / 2;
+
+    let textX;
+    if (align === 'left')  { ctx.textAlign = 'left';  textX = x + padding; }
+    else if (align === 'right') { ctx.textAlign = 'right'; textX = x + w - padding; }
+    else { ctx.textAlign = 'center'; textX = x + w / 2; }
+
+    lines.forEach((line, i) => ctx.fillText(line, textX, startY + i * lineH));
+  }
+
   async function buildGrid(theme) {
     const order = [...selected];
     if (order.length !== chosenLayout.picks) return null;
@@ -1202,7 +1333,6 @@
     const PAD = 50;          // 외곽 여백
     const GAP = 12;          // 셀 간 간격
     const SPLIT_GAP = 32;    // 두 세트 사이 간격 (가위 자르는 선)
-    const FOOTER = 100;      // 하단 라벨 영역
 
     const gridCanvas = $('gridCanvas');
     gridCanvas.width = W;
@@ -1227,72 +1357,89 @@
       img.src = photos[idx];
     })));
 
-    // 4) 레이아웃별 배치
-    if (chosenLayout.id === '2x2') {
-      // 단일 2×2 그리드
-      const cellW = (W - PAD * 2 - GAP) / 2;
-      const cellH = (H - PAD - GAP - FOOTER) / 2;
-      for (let r = 0; r < 2; r++) {
-        for (let c = 0; c < 2; c++) {
-          const idx = r * 2 + c;
-          drawCover(ctx, imgs[idx], PAD + c * (cellW + GAP), PAD + r * (cellH + GAP), cellW, cellH);
-        }
-      }
-    } else if (chosenLayout.id === '4x1') {
-      // 같은 4컷 세로 스트립을 좌·우 두 세트
-      const stripW = (W - PAD * 2 - SPLIT_GAP) / 2;
-      const cellH = (H - PAD - GAP * 3 - FOOTER) / 4;
-      const drawStrip = (offsetX) => {
-        for (let r = 0; r < 4; r++) {
-          drawCover(ctx, imgs[r], offsetX, PAD + r * (cellH + GAP), stripW, cellH);
-        }
-      };
-      drawStrip(PAD);
-      drawStrip(PAD + stripW + SPLIT_GAP);
-    } else if (chosenLayout.id === '1x3') {
-      // 같은 3컷 가로줄을 상·하 두 세트
-      const cellW = (W - PAD * 2 - GAP * 2) / 3;
-      const stripH = (H - PAD - SPLIT_GAP - FOOTER) / 2;
-      const drawRow = (offsetY) => {
-        for (let c = 0; c < 3; c++) {
-          drawCover(ctx, imgs[c], PAD + c * (cellW + GAP), offsetY, cellW, stripH);
-        }
-      };
-      drawRow(PAD);
-      drawRow(PAD + stripH + SPLIT_GAP);
-    }
-
-    // 4) 라벨 + 날짜
-    ctx.textBaseline = 'middle';
+    // 4) 라벨/날짜 텍스트
     const now = new Date();
     const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
     const labelText = (customLabel && customLabel.trim()) ? customLabel.trim() : DEFAULT_LABEL;
 
-    // 날짜 폰트 측정 (라벨이 들어갈 가용 너비 계산용)
-    const dateFontSize = Math.min(32, Math.max(22, W/30));
-    ctx.font = `500 ${dateFontSize}px Pretendard, sans-serif`;
-    const dateWidth = ctx.measureText(dateStr).width;
-    const maxLabelWidth = W - PAD * 2 - dateWidth - 32;
+    // 5) 레이아웃별 사진 + 글자 배치
+    if (chosenLayout.id === '2x2') {
+      // 단일 2×2 그리드, 하단 footer에 라벨(좌) + 날짜(우)
+      const FOOTER = 110;
+      const cellW = (W - PAD * 2 - GAP) / 2;
+      const cellH = (H - PAD - GAP - FOOTER) / 2;
+      for (let r = 0; r < 2; r++) {
+        for (let c = 0; c < 2; c++) {
+          drawCover(ctx, imgs[r*2+c], PAD + c * (cellW + GAP), PAD + r * (cellH + GAP), cellW, cellH);
+        }
+      }
+      const footerY = H - FOOTER;
+      const dateW = 240;
+      const labelW = W - PAD * 2 - dateW - 16;
+      drawTextInBox(ctx, labelText, PAD, footerY, labelW, FOOTER, {
+        role: 'label', align: 'left', vAlign: 'middle',
+        maxSize: 44, minSize: 18, maxLines: 2, color: theme.ink, padding: 0,
+      });
+      drawTextInBox(ctx, dateStr, W - PAD - dateW, footerY, dateW, FOOTER, {
+        align: 'right', vAlign: 'middle',
+        maxSize: 28, minSize: 14, maxLines: 1, color: theme.pop, padding: 0,
+      });
 
-    // 한글 포함 여부에 따라 폰트 변경, 길이에 따라 자동 축소
-    const hasKorean = /[\u3131-\uD79D\uAC00-\uD7A3]/.test(labelText);
-    const labelFamily = hasKorean ? 'Pretendard, sans-serif' : 'Fraunces, serif';
-    const labelWeight = hasKorean ? '700' : 'italic 600';
-    let labelSize = Math.min(48, Math.max(32, W/22));
-    ctx.font = `${labelWeight} ${labelSize}px ${labelFamily}`;
-    while (ctx.measureText(labelText).width > maxLabelWidth && labelSize > 16) {
-      labelSize -= 1;
-      ctx.font = `${labelWeight} ${labelSize}px ${labelFamily}`;
+    } else if (chosenLayout.id === '4x1') {
+      // 좌·우 두 세트. 각 세트 = 사진 4장 + 하단 글자 영역.
+      const LABEL_BLOCK_H = 110;
+      const stripW = (W - PAD * 2 - SPLIT_GAP) / 2;
+      const cellsAreaH = H - PAD * 2 - GAP * 3 - LABEL_BLOCK_H - 16;
+      const cellH = cellsAreaH / 4;
+      const labelY = PAD + cellsAreaH + 16;
+
+      const drawSet = (offsetX) => {
+        for (let r = 0; r < 4; r++) {
+          drawCover(ctx, imgs[r], offsetX, PAD + r * (cellH + GAP), stripW, cellH);
+        }
+        // 라벨 (위쪽 약 65%)
+        const lblH = LABEL_BLOCK_H * 0.62;
+        drawTextInBox(ctx, labelText, offsetX, labelY, stripW, lblH, {
+          role: 'label', align: 'center', vAlign: 'middle',
+          maxSize: 30, minSize: 11, maxLines: 2, color: theme.ink, padding: 8,
+        });
+        // 날짜 (아래쪽 약 35%)
+        drawTextInBox(ctx, dateStr, offsetX, labelY + lblH, stripW, LABEL_BLOCK_H - lblH, {
+          align: 'center', vAlign: 'middle',
+          maxSize: 20, minSize: 12, maxLines: 1, color: theme.pop, padding: 4,
+        });
+      };
+      drawSet(PAD);
+      drawSet(PAD + stripW + SPLIT_GAP);
+
+    } else if (chosenLayout.id === '1x3') {
+      // 상·하 두 세트. 각 세트 = 좌측 글자 영역 + 사진 3장.
+      const LABEL_BLOCK_W = 280;
+      const stripH = (H - PAD * 2 - SPLIT_GAP) / 2;
+      const cellsAreaW = W - PAD * 2 - LABEL_BLOCK_W - 16 - GAP * 2;
+      const cellW = cellsAreaW / 3;
+      const cellsStartX = PAD + LABEL_BLOCK_W + 16;
+
+      const drawSet = (offsetY) => {
+        // 글자 영역 (좌측)
+        // 라벨은 위쪽, 날짜는 아래쪽 작게
+        const lblH = stripH * 0.7;
+        drawTextInBox(ctx, labelText, PAD, offsetY, LABEL_BLOCK_W, lblH, {
+          role: 'label', align: 'left', vAlign: 'middle',
+          maxSize: 42, minSize: 14, maxLines: 3, color: theme.ink, padding: 12,
+        });
+        drawTextInBox(ctx, dateStr, PAD, offsetY + lblH, LABEL_BLOCK_W, stripH - lblH, {
+          align: 'left', vAlign: 'middle',
+          maxSize: 24, minSize: 12, maxLines: 1, color: theme.pop, padding: 12,
+        });
+        // 사진 3장
+        for (let c = 0; c < 3; c++) {
+          drawCover(ctx, imgs[c], cellsStartX + c * (cellW + GAP), offsetY, cellW, stripH);
+        }
+      };
+      drawSet(PAD);
+      drawSet(PAD + stripH + SPLIT_GAP);
     }
-    ctx.fillStyle = theme.ink;
-    ctx.textAlign = 'left';
-    ctx.fillText(labelText, PAD, H - FOOTER/2);
-
-    // 날짜
-    ctx.fillStyle = theme.pop;
-    ctx.font = `500 ${dateFontSize}px Pretendard, sans-serif`;
-    ctx.textAlign = 'right';
-    ctx.fillText(dateStr, W - PAD, H - FOOTER/2);
 
     // 이미지가 CORS 문제로 tainted면 toDataURL이 실패함
     try {
@@ -1436,9 +1583,16 @@
     showScreen('getready');
     await runGetReady();
     showScreen('camera');
+    setupCameraMask(chosenLayout);
     const ok = await startCamera();
     if (!ok) { showScreen('intro'); return; }
-    setTimeout(() => shootSequence(), 400);
+    setTimeout(() => { setupCameraMask(chosenLayout); shootSequence(); }, 400);
+  });
+
+  window.addEventListener('resize', () => {
+    if (screens.camera.classList.contains('active') && chosenLayout) {
+      setupCameraMask(chosenLayout);
+    }
   });
 
   $('btnClose').addEventListener('click', () => { shooting = false; stopCamera(); showScreen('intro'); });

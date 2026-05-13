@@ -1330,9 +1330,9 @@
     const isLandscape = chosenLayout.orientation === 'landscape';
     const W = isLandscape ? 1800 : 1200;
     const H = isLandscape ? 1200 : 1800;
-    const PAD = 50;          // 외곽 여백
+    const PAD = 40;          // 외곽 여백 (자른 후 각 사진의 사방 여백이 균등하도록)
     const GAP = 12;          // 셀 간 간격
-    const SPLIT_GAP = 32;    // 두 세트 사이 간격 (가위 자르는 선)
+    const SPLIT_GAP = 80;    // 두 세트 사이 간격 = PAD * 2 (잘랐을 때 양쪽 균등)
 
     const gridCanvas = $('gridCanvas');
     gridCanvas.width = W;
@@ -1391,19 +1391,17 @@
       const stripW = (W - PAD * 2 - SPLIT_GAP) / 2;
       const cellsAreaH = H - PAD * 2 - GAP * 3 - LABEL_BLOCK_H - 16;
       const cellH = cellsAreaH / 4;
-      const labelY = PAD + cellsAreaH + 16;
+      const labelY = PAD + cellsAreaH + GAP * 3 + 16;
 
       const drawSet = (offsetX) => {
         for (let r = 0; r < 4; r++) {
           drawCover(ctx, imgs[r], offsetX, PAD + r * (cellH + GAP), stripW, cellH);
         }
-        // 라벨 (위쪽 약 65%)
         const lblH = LABEL_BLOCK_H * 0.62;
         drawTextInBox(ctx, labelText, offsetX, labelY, stripW, lblH, {
           role: 'label', align: 'center', vAlign: 'middle',
           maxSize: 30, minSize: 11, maxLines: 2, color: theme.ink, padding: 8,
         });
-        // 날짜 (아래쪽 약 35%)
         drawTextInBox(ctx, dateStr, offsetX, labelY + lblH, stripW, LABEL_BLOCK_H - lblH, {
           align: 'center', vAlign: 'middle',
           maxSize: 20, minSize: 12, maxLines: 1, color: theme.pop, padding: 4,
@@ -1411,6 +1409,18 @@
       };
       drawSet(PAD);
       drawSet(PAD + stripW + SPLIT_GAP);
+
+      // 가운데 자르는 가이드 라인 (세로, 글자색 점선)
+      ctx.save();
+      ctx.strokeStyle = theme.ink;
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([10, 6]);
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(W/2, PAD);
+      ctx.lineTo(W/2, H - PAD);
+      ctx.stroke();
+      ctx.restore();
 
     } else if (chosenLayout.id === '1x3') {
       // 상·하 두 세트. 각 세트 = 좌측 글자 영역 + 사진 3장.
@@ -1439,6 +1449,18 @@
       };
       drawSet(PAD);
       drawSet(PAD + stripH + SPLIT_GAP);
+
+      // 가운데 자르는 가이드 라인 (가로, 글자색 점선)
+      ctx.save();
+      ctx.strokeStyle = theme.ink;
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([10, 6]);
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(PAD, H/2);
+      ctx.lineTo(W - PAD, H/2);
+      ctx.stroke();
+      ctx.restore();
     }
 
     // 이미지가 CORS 문제로 tainted면 toDataURL이 실패함

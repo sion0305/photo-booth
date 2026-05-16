@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,600&family=Pretendard:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <style>
   :root {
     --bg: #F3EEE5;
@@ -245,7 +246,7 @@
   .select__head { padding: 0 22px; display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px; }
   .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; flex: 1; overflow-y: auto; padding: 16px 14px 110px; }
   .thumb {
-    position: relative; aspect-ratio: 3/4;
+    position: relative; aspect-ratio: var(--cell-ratio, 3/4);
     border-radius: 10px; overflow: hidden; cursor: pointer;
     background: #ddd; border: 2px solid transparent;
     transition: transform .15s ease;
@@ -329,7 +330,27 @@
   .result__head { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
   .result__title { font-family: 'Fraunces', serif; font-weight: 800; font-style: italic; font-size: 28px; letter-spacing: -.02em; }
   .result__canvas-wrap { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; padding: 20px 0; }
-  #resultImg { max-width: 100%; max-height: 62dvh; box-shadow: 0 20px 50px rgba(0,0,0,.18); border-radius: 4px; }
+  #resultImg { max-width: 100%; max-height: 48dvh; box-shadow: 0 20px 50px rgba(0,0,0,.18); border-radius: 4px; }
+  .result__qr-wrap {
+    width: 100%;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 8px;
+    margin: 8px 0 14px;
+  }
+  .qr-label {
+    font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600;
+  }
+  .qr-box {
+    width: 132px; height: 132px;
+    background: #fff;
+    border: 1.5px solid var(--line); border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 8px; overflow: hidden;
+  }
+  .qr-box img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .qr-status { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.4; padding: 6px; }
+  .qr-status a { color: var(--pop); text-decoration: underline; word-break: break-all; }
   .result__actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
   /* ADMIN */
@@ -445,7 +466,9 @@
     /* Result */
     .result { padding: 28px 32px 28px; }
     .result__title { font-size: 36px; }
-    #resultImg { max-height: 58dvh; }
+    #resultImg { max-height: 50dvh; }
+    .qr-box { width: 160px; height: 160px; }
+    .qr-label { font-size: 12px; }
     .result__actions { gap: 14px; }
 
     /* Admin */
@@ -514,7 +537,8 @@
     /* Result */
     .result { padding: 32px 40px; }
     .result__title { font-size: 40px; }
-    #resultImg { max-height: 60dvh; }
+    #resultImg { max-height: 52dvh; }
+    .qr-box { width: 180px; height: 180px; }
 
     /* Admin */
     .admin-inner { padding: 0 40px 36px; }
@@ -643,6 +667,12 @@
       <span class="badge"><span class="dot"></span> SAVED</span>
     </div>
     <div class="result__canvas-wrap"><img id="resultImg" alt="photo result" /></div>
+    <div class="result__qr-wrap" id="qrWrap">
+      <div class="qr-label">📱 폰으로 받기</div>
+      <div class="qr-box" id="qrBox">
+        <div class="qr-status">준비 중…</div>
+      </div>
+    </div>
     <div class="result__actions">
       <button class="btn btn-ghost" id="btnRetry">RETAKE</button>
       <button class="btn btn-primary" id="btnDownload">DOWNLOAD ↓</button>
@@ -741,6 +771,14 @@
   const REST_SECONDS = SHOT_INTERVAL - TIMER_SECONDS;
   const JSON_THEMES_URL = './themes.json'; // 서버에 배포된 파일
   const DEFAULT_LABEL = '행신 임마누엘 교회 사랑의 바자회';
+
+  // ============ QR 코드 업로드 설정 ============
+  // 사진을 QR로 공유하려면 Imgur Client ID가 필요합니다.
+  // 1) https://api.imgur.com/oauth2/addclient 접속
+  // 2) "Anonymous usage without user authorization" 선택
+  // 3) 발급받은 Client ID를 아래에 붙여넣으세요.
+  // 비워두면 QR 영역이 안내 메시지로 대체됩니다.
+  const IMGUR_CLIENT_ID = '';
 
   const LAYOUTS = [
     { id: '2x2', name: 'Classic 2×2', picks: 4, desc: '4 shots',          orientation: 'portrait',  duplicate: false },
@@ -893,11 +931,11 @@
   // 레이아웃별 셀 비율 (최종 인쇄 시 각 사진 셀의 너비:높이)
   // 이 비율로 카메라 미리보기를 마스킹해 사용자가 찍히는 영역을 정확히 보게 함
   function getCellRatio(layout) {
-    if (!layout) return 2/3;
-    if (layout.id === '2x2') return 2/3;   // 인물 비율
+    if (!layout) return 3/4;
+    if (layout.id === '2x2') return 3/4;   // 폴라로이드/인스턴트 카메라 비율
     if (layout.id === '4x1') return 4/3;   // 가로 풍경 (스트립 한 칸)
-    if (layout.id === '1x3') return 1/1;   // 정사각에 가까움
-    return 2/3;
+    if (layout.id === '1x3') return 1/1;   // 정사각
+    return 3/4;
   }
 
   function setupCameraMask(layout) {
@@ -990,6 +1028,8 @@
     $('selectLayoutName').textContent = chosenLayout.name;
     updateSelCount();
     const grid = $('gridThumbs');
+    // 썸네일을 실제 캡처 비율(셀 비율)로 표시
+    grid.style.setProperty('--cell-ratio', getCellRatio(chosenLayout));
     grid.innerHTML = '';
     photos.forEach((src, idx) => {
       const el = document.createElement('div');
@@ -1364,25 +1404,28 @@
 
     // 5) 레이아웃별 사진 + 글자 배치
     if (chosenLayout.id === '2x2') {
-      // 단일 2×2 그리드, 하단 footer에 라벨(좌) + 날짜(우)
-      const FOOTER = 110;
-      const cellW = (W - PAD * 2 - GAP) / 2;
-      const cellH = (H - PAD - GAP - FOOTER) / 2;
+      // 폴라로이드 스타일: 넉넉한 외곽 여백 + 큰 하단 footer
+      const PAD_X = 70;
+      const PAD_TOP = 70;
+      const cellW = (W - PAD_X * 2 - GAP) / 2;
+      const cellH = Math.round(cellW * 4 / 3);  // 3:4 비율 (촬영 비율과 일치)
+      const FOOTER = H - PAD_TOP - cellH * 2 - GAP;
+
       for (let r = 0; r < 2; r++) {
         for (let c = 0; c < 2; c++) {
-          drawCover(ctx, imgs[r*2+c], PAD + c * (cellW + GAP), PAD + r * (cellH + GAP), cellW, cellH);
+          drawCover(ctx, imgs[r*2+c], PAD_X + c * (cellW + GAP), PAD_TOP + r * (cellH + GAP), cellW, cellH);
         }
       }
-      const footerY = H - FOOTER;
-      const dateW = 240;
-      const labelW = W - PAD * 2 - dateW - 16;
-      drawTextInBox(ctx, labelText, PAD, footerY, labelW, FOOTER, {
-        role: 'label', align: 'left', vAlign: 'middle',
-        maxSize: 44, minSize: 18, maxLines: 2, color: theme.ink, padding: 0,
+      // 하단 큰 footer 영역에 라벨 + 날짜를 중앙 정렬로 (폴라로이드 느낌)
+      const footerY = PAD_TOP + cellH * 2 + GAP;
+      const lblH = FOOTER * 0.62;
+      drawTextInBox(ctx, labelText, PAD_X, footerY, W - PAD_X * 2, lblH, {
+        role: 'label', align: 'center', vAlign: 'middle',
+        maxSize: 64, minSize: 18, maxLines: 2, color: theme.ink, padding: 16,
       });
-      drawTextInBox(ctx, dateStr, W - PAD - dateW, footerY, dateW, FOOTER, {
-        align: 'right', vAlign: 'middle',
-        maxSize: 28, minSize: 14, maxLines: 1, color: theme.pop, padding: 0,
+      drawTextInBox(ctx, dateStr, PAD_X, footerY + lblH, W - PAD_X * 2, FOOTER - lblH, {
+        align: 'center', vAlign: 'middle',
+        maxSize: 32, minSize: 14, maxLines: 1, color: theme.pop, padding: 8,
       });
 
     } else if (chosenLayout.id === '4x1') {
@@ -1626,7 +1669,55 @@
     finalDataUrl = data;
     $('resultImg').src = data;
     showScreen('result');
+    showQR(data);
   });
+
+  // ============ QR 코드 생성 ============
+  async function uploadToImgur(dataUrl) {
+    if (!IMGUR_CLIENT_ID) return null;
+    try {
+      const base64 = dataUrl.split(',')[1];
+      const formData = new FormData();
+      formData.append('image', base64);
+      formData.append('type', 'base64');
+      const res = await fetch('https://api.imgur.com/3/image', {
+        method: 'POST',
+        headers: { 'Authorization': `Client-ID ${IMGUR_CLIENT_ID}` },
+        body: formData,
+      });
+      if (!res.ok) throw new Error('upload failed: ' + res.status);
+      const data = await res.json();
+      return data?.data?.link || null;
+    } catch (e) {
+      console.error('Imgur 업로드 실패:', e);
+      return null;
+    }
+  }
+
+  async function showQR(dataUrl) {
+    const box = $('qrBox');
+    const wrap = $('qrWrap');
+    wrap.style.display = 'flex';
+
+    if (!IMGUR_CLIENT_ID) {
+      box.innerHTML = `<div class="qr-status">QR 기능을 사용하려면<br><strong>Imgur Client ID</strong>를<br>코드에 설정해주세요.</div>`;
+      return;
+    }
+
+    box.innerHTML = '<div class="qr-status">업로드 중…</div>';
+    const link = await uploadToImgur(dataUrl);
+    if (!link) {
+      box.innerHTML = '<div class="qr-status">업로드 실패<br>다운로드 버튼을 사용하세요</div>';
+      return;
+    }
+    try {
+      const qrData = await QRCode.toDataURL(link, { width: 320, margin: 1, errorCorrectionLevel: 'M' });
+      box.innerHTML = `<a href="${link}" target="_blank" rel="noopener"><img src="${qrData}" alt="QR Code"></a>`;
+    } catch (e) {
+      console.error('QR 생성 실패:', e);
+      box.innerHTML = `<div class="qr-status"><a href="${link}" target="_blank">${link}</a></div>`;
+    }
+  }
 
   $('btnRetry').addEventListener('click', () => {
     photos = []; selected.clear(); finalDataUrl = null;

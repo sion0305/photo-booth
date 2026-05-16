@@ -772,13 +772,13 @@
   const JSON_THEMES_URL = './themes.json'; // 서버에 배포된 파일
   const DEFAULT_LABEL = '행신 임마누엘 교회 사랑의 바자회';
 
-  // ============ QR 코드 업로드 설정 ============
-  // 사진을 QR로 공유하려면 Imgur Client ID가 필요합니다.
-  // 1) https://api.imgur.com/oauth2/addclient 접속
-  // 2) "Anonymous usage without user authorization" 선택
-  // 3) 발급받은 Client ID를 아래에 붙여넣으세요.
-  // 비워두면 QR 영역이 안내 메시지로 대체됩니다.
-  const IMGUR_CLIENT_ID = '';
+  // ============ QR 코드용 이미지 업로드 설정 (ImgBB) ============
+  // 사진을 QR로 공유하려면 ImgBB API Key가 필요합니다.
+  // 1) https://imgbb.com/ 가입 (이메일만 있으면 됨)
+  // 2) https://api.imgbb.com/ 에서 "Get API Key" 클릭
+  // 3) 발급받은 키를 아래에 붙여넣으세요.
+  // 비워두면 QR 영역에 안내가 표시되고, 다운로드는 정상 작동합니다.
+  const IMGBB_API_KEY = '6f113b2c25100b07e1afa9f047ff065d';
 
   const LAYOUTS = [
     { id: '2x2', name: 'Classic 2×2', picks: 4, desc: '4 shots',          orientation: 'portrait',  duplicate: false },
@@ -1673,23 +1673,22 @@
   });
 
   // ============ QR 코드 생성 ============
-  async function uploadToImgur(dataUrl) {
-    if (!IMGUR_CLIENT_ID) return null;
+  async function uploadToImgbb(dataUrl) {
+    if (!IMGBB_API_KEY) return null;
     try {
       const base64 = dataUrl.split(',')[1];
       const formData = new FormData();
       formData.append('image', base64);
-      formData.append('type', 'base64');
-      const res = await fetch('https://api.imgur.com/3/image', {
+      const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
         method: 'POST',
-        headers: { 'Authorization': `Client-ID ${IMGUR_CLIENT_ID}` },
         body: formData,
       });
       if (!res.ok) throw new Error('upload failed: ' + res.status);
       const data = await res.json();
-      return data?.data?.link || null;
+      // url(원본 이미지), display_url(보기 좋은 페이지)
+      return data?.data?.url || data?.data?.display_url || null;
     } catch (e) {
-      console.error('Imgur 업로드 실패:', e);
+      console.error('ImgBB 업로드 실패:', e);
       return null;
     }
   }
@@ -1699,13 +1698,13 @@
     const wrap = $('qrWrap');
     wrap.style.display = 'flex';
 
-    if (!IMGUR_CLIENT_ID) {
-      box.innerHTML = `<div class="qr-status">QR 기능을 사용하려면<br><strong>Imgur Client ID</strong>를<br>코드에 설정해주세요.</div>`;
+    if (!IMGBB_API_KEY) {
+      box.innerHTML = `<div class="qr-status">QR 기능을 사용하려면<br><strong>ImgBB API Key</strong>를<br>코드에 설정해주세요.</div>`;
       return;
     }
 
     box.innerHTML = '<div class="qr-status">업로드 중…</div>';
-    const link = await uploadToImgur(dataUrl);
+    const link = await uploadToImgbb(dataUrl);
     if (!link) {
       box.innerHTML = '<div class="qr-status">업로드 실패<br>다운로드 버튼을 사용하세요</div>';
       return;

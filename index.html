@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,600&family=Pretendard:wght@400;500;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   :root {
     --bg: #F3EEE5;
@@ -132,29 +132,85 @@
   .layout-card.selected .lc-name { color: var(--bg); }
   .layout-card.selected .lc-meta { color: rgba(243,238,229,.6); }
   .lc-preview {
-    display: grid;
-    gap: 3px;
+    position: relative;
     padding: 5px;
     border: 1px dashed currentColor;
     border-radius: 6px;
-    opacity: .9;
+    opacity: .92;
   }
+
+  /* 2×2: 4:6 폴라로이드 (위 사진 + 큰 하단 글자) */
   .lc-preview.lp-2x2 {
-    width: 90px; height: 90px;
+    width: 84px; height: 126px;
+    display: grid;
+    grid-template-rows: 1fr 22%;
+    gap: 4px;
+  }
+  .lp-2x2 .lp-photos {
+    display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
+    gap: 2px;
   }
+
+  /* 4×1: 4:6 비율 박스 안에 한 세트만 (실제 한쪽 단면) */
   .lc-preview.lp-4x1 {
-    width: 36px; height: 132px;
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(4, 1fr);
+    width: 84px; height: 126px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
+  .lp-4x1 .lp-set {
+    width: 40%;
+    height: 92%;
+    display: grid;
+    grid-template-rows: repeat(4, 1fr) auto;
+    gap: 2px;
+  }
+
+  /* 1×3: 6:4 비율 박스 안에 한 세트만 */
   .lc-preview.lp-1x3 {
-    width: 132px; height: 44px;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: 1fr;
+    width: 126px; height: 84px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-  .lc-cell { background: currentColor; border-radius: 1px; opacity: .9; }
+  .lp-1x3 .lp-set {
+    width: 92%;
+    height: 40%;
+    display: grid;
+    grid-template-columns: 32% repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .lc-cell { background: currentColor; border-radius: 1px; opacity: .85; }
+
+  /* 글자 영역 — 텍스트 라인으로 표현 */
+  .lc-text { display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+  .lp-2x2 .lc-text { align-items: center; }
+  .lp-4x1 .lc-text { align-items: center; min-height: 12px; padding-top: 2px; }
+  .lp-1x3 .lc-text { align-items: flex-start; padding: 0 3px; }
+  .lc-text-line { height: 2px; background: currentColor; opacity: 0.5; border-radius: 1px; }
+  .lc-text-line--lg { width: 75%; }
+  .lc-text-line--sm { width: 42%; }
+
+  /* 자르는 점선 가이드 */
+  .lc-guide-v {
+    position: absolute;
+    top: 4px; bottom: 4px;
+    left: 50%;
+    border-left: 1px dashed currentColor;
+    opacity: 0.65;
+    transform: translateX(-50%);
+  }
+  .lc-guide-h {
+    position: absolute;
+    left: 4px; right: 4px;
+    top: 50%;
+    border-top: 1px dashed currentColor;
+    opacity: 0.65;
+    transform: translateY(-50%);
+  }
   .lc-info { text-align: center; }
   .lc-name { font-family: 'Fraunces', serif; font-weight: 600; font-size: 15px; line-height: 1.2; }
   .lc-meta { font-size: 11px; color: var(--muted); margin-top: 2px; letter-spacing: .08em; text-transform: uppercase; }
@@ -420,9 +476,9 @@
     .layout__head { padding: 0 32px; }
     .layout__list { grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 32px; }
     .layout-card { padding: 24px 18px 18px; border-radius: 18px; gap: 18px; }
-    .lc-preview.lp-2x2 { width: 110px; height: 110px; padding: 6px; gap: 4px; }
-    .lc-preview.lp-4x1 { width: 44px;  height: 160px; padding: 6px; gap: 4px; }
-    .lc-preview.lp-1x3 { width: 160px; height: 54px;  padding: 6px; gap: 4px; }
+    .lc-preview.lp-2x2 { width: 104px; height: 156px; padding: 6px; }
+    .lc-preview.lp-4x1 { width: 104px; height: 156px; padding: 6px; }
+    .lc-preview.lp-1x3 { width: 156px; height: 104px; padding: 6px; }
     .lc-name { font-size: 17px; }
     .lc-meta { font-size: 12px; }
     .layout__footer { padding: 0 32px; }
@@ -509,9 +565,9 @@
     .layout__head { padding: 0 40px; }
     .layout__list { padding: 40px; gap: 20px; }
     .layout-card { padding: 28px 20px 20px; border-radius: 20px; gap: 20px; }
-    .lc-preview.lp-2x2 { width: 130px; height: 130px; padding: 7px; }
-    .lc-preview.lp-4x1 { width: 52px;  height: 190px; padding: 7px; }
-    .lc-preview.lp-1x3 { width: 190px; height: 64px;  padding: 7px; }
+    .lc-preview.lp-2x2 { width: 124px; height: 186px; padding: 7px; }
+    .lc-preview.lp-4x1 { width: 124px; height: 186px; padding: 7px; }
+    .lc-preview.lp-1x3 { width: 186px; height: 124px; padding: 7px; }
     .lc-name { font-size: 19px; }
     .layout__footer { padding: 0 40px; }
 
@@ -778,7 +834,7 @@
   // 2) https://api.imgbb.com/ 에서 "Get API Key" 클릭
   // 3) 발급받은 키를 아래에 붙여넣으세요.
   // 비워두면 QR 영역에 안내가 표시되고, 다운로드는 정상 작동합니다.
-  const IMGBB_API_KEY = '6f113b2c25100b07e1afa9f047ff065d';
+  const IMGBB_API_KEY = '';
 
   const LAYOUTS = [
     { id: '2x2', name: 'Classic 2×2', picks: 4, desc: '4 shots',          orientation: 'portrait',  duplicate: false },
@@ -857,24 +913,46 @@
   }
 
   // ============ 레이아웃 카드 ============
-  // 레이아웃 카드 프리뷰 (단일 그리드 — 실제 출력은 buildGrid에서 두 세트로 복제)
+  // 레이아웃 카드 프리뷰 — 박스 비율은 실제 출력물(4:6 / 6:4) 그대로, 안에는 한 세트만 표시
   function buildLayoutPreview(lo) {
-    if (lo.id === '2x2') {
-      return `<div class="lc-preview lp-2x2">
-        <div class="lc-cell"></div><div class="lc-cell"></div>
-        <div class="lc-cell"></div><div class="lc-cell"></div>
+    const textBlock = `
+      <div class="lc-text">
+        <div class="lc-text-line lc-text-line--lg"></div>
+        <div class="lc-text-line lc-text-line--sm"></div>
       </div>`;
+
+    if (lo.id === '2x2') {
+      return `
+        <div class="lc-preview lp-2x2">
+          <div class="lp-photos">
+            <div class="lc-cell"></div><div class="lc-cell"></div>
+            <div class="lc-cell"></div><div class="lc-cell"></div>
+          </div>
+          ${textBlock}
+        </div>`;
     }
     if (lo.id === '4x1') {
-      return `<div class="lc-preview lp-4x1">
-        <div class="lc-cell"></div><div class="lc-cell"></div>
-        <div class="lc-cell"></div><div class="lc-cell"></div>
-      </div>`;
+      return `
+        <div class="lc-preview lp-4x1">
+          <div class="lp-set">
+            <div class="lc-cell"></div>
+            <div class="lc-cell"></div>
+            <div class="lc-cell"></div>
+            <div class="lc-cell"></div>
+            ${textBlock}
+          </div>
+        </div>`;
     }
     if (lo.id === '1x3') {
-      return `<div class="lc-preview lp-1x3">
-        <div class="lc-cell"></div><div class="lc-cell"></div><div class="lc-cell"></div>
-      </div>`;
+      return `
+        <div class="lc-preview lp-1x3">
+          <div class="lp-set">
+            ${textBlock}
+            <div class="lc-cell"></div>
+            <div class="lc-cell"></div>
+            <div class="lc-cell"></div>
+          </div>
+        </div>`;
     }
     return '';
   }
@@ -1709,12 +1787,33 @@
       box.innerHTML = '<div class="qr-status">업로드 실패<br>다운로드 버튼을 사용하세요</div>';
       return;
     }
+
+    // QR 라이브러리가 안 로드된 경우만 텍스트 링크로 폴백
+    if (typeof QRCode === 'undefined') {
+      box.innerHTML = `<div class="qr-status">QR 라이브러리 로드 실패<br><a href="${link}" target="_blank">링크 직접 열기</a></div>`;
+      return;
+    }
+
     try {
-      const qrData = await QRCode.toDataURL(link, { width: 320, margin: 1, errorCorrectionLevel: 'M' });
-      box.innerHTML = `<a href="${link}" target="_blank" rel="noopener"><img src="${qrData}" alt="QR Code"></a>`;
+      // qrcodejs는 DOM 요소에 직접 그림 (동기)
+      box.innerHTML = '';
+      const target = document.createElement('div');
+      target.style.cssText = 'cursor:pointer;line-height:0;';
+      box.appendChild(target);
+
+      const size = Math.max(96, Math.min(box.clientWidth, box.clientHeight) - 16);
+      new QRCode(target, {
+        text: link,
+        width: size,
+        height: size,
+        correctLevel: QRCode.CorrectLevel.M,
+      });
+
+      // 클릭 시 imgbb 페이지 열기
+      target.addEventListener('click', () => window.open(link, '_blank'));
     } catch (e) {
       console.error('QR 생성 실패:', e);
-      box.innerHTML = `<div class="qr-status"><a href="${link}" target="_blank">${link}</a></div>`;
+      box.innerHTML = `<div class="qr-status"><a href="${link}" target="_blank">링크 직접 열기</a></div>`;
     }
   }
 
